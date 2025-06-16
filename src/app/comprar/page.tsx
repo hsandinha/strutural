@@ -3,9 +3,9 @@
 
 import { useState, useEffect } from "react";
 import { mockImoveis } from "@/lib/mockData";
-import { Imovel } from "@/types";
 import { SearchBar } from "@/components/SearchBar";
 import { PropertyCard } from "@/components/PropertyCard";
+import { Imovel, SearchFilters } from "@/types";
 
 export default function ComprarPage() {
   const [imoveisFiltrados, setImoveisFiltrados] = useState<Imovel[]>([]);
@@ -19,10 +19,10 @@ export default function ComprarPage() {
   }, []);
 
   // Esta função será chamada pela SearchBar
-  const handleSearch = (filters: any) => {
+  const handleSearch = (filters: SearchFilters) => {
     console.log("Buscando com os filtros:", filters);
-    // Aqui virá a lógica complexa para filtrar os imóveis com base nos filtros
-    // Por enquanto, apenas exibimos um log
+
+    // Futuramente, a lógica de filtro real virá aqui
     alert("Funcionalidade de busca ainda será implementada!");
   };
 

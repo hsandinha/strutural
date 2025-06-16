@@ -5,8 +5,6 @@
 import { useState } from "react";
 import { mockImoveis } from "@/lib/mockData";
 import { Imovel } from "@/types";
-
-import { Header } from "@/components/Header";
 import { SearchBar } from "@/components/SearchBar";
 import { PropertiesCarousel } from "@/components/PropertiesCarousel";
 

@@ -79,8 +79,8 @@ export default function CadastrarImovelPage() {
                 <div className="mb-4">
                   <input
                     type="text"
-                    placeholder="*NOME"
-                    className="w-full bg-white border border-gray-200 rounded-lg h-14 px-4 text-gray-700 placeholder-gray-400 focus:outline-none focus:border-blue-400 transition"
+                    placeholder="Seu nome completo"
+                    className={inputClass}
                   />
                 </div>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">

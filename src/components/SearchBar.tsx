@@ -2,11 +2,14 @@
 "use client";
 
 import { useState } from "react";
-import type { SearchFilters } from "@/types";
+import type { SearchFilters } from "@/types"; // 1. Importe o tipo que criamos
 
-// O componente agora recebe uma função 'onSearch' para comunicar os filtros
-export function SearchBar({ onSearch }: { onSearch: (filters: any) => void }) {
-  // Estado interno para guardar os valores de cada campo do formulário
+export function SearchBar({
+  onSearch,
+}: {
+  onSearch: (filters: SearchFilters) => void;
+}) {
+  // 2. Usamos o tipo no nosso estado para garantir consistência
   const [filters, setFilters] = useState<SearchFilters>({
     finalidade: "Comprar",
     tipo: "Todos",
@@ -16,7 +19,6 @@ export function SearchBar({ onSearch }: { onSearch: (filters: any) => void }) {
     valorMax: "",
   });
 
-  // Função para atualizar o estado sempre que um campo muda
   const handleInputChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
   ) => {
@@ -26,15 +28,13 @@ export function SearchBar({ onSearch }: { onSearch: (filters: any) => void }) {
     });
   };
 
-  // Função chamada ao clicar no botão de busca
   const handleSearchClick = (e: React.MouseEvent<HTMLButtonElement>) => {
-    e.preventDefault(); // Previne o recarregamento da página
-    onSearch(filters); // Envia os filtros para a página "pai"
+    e.preventDefault();
+    onSearch(filters);
   };
 
   return (
-    // Caixa de busca com o design do seu print
-    <div className="bg-white/90 p-8 rounded-lg shadow-2xl w-full max-w-5xl mx-auto backdrop-blur-sm overflow-visible opacity-80">
+    <div className="bg-white/90 p-8 rounded-lg shadow-2xl w-full max-w-5xl mx-auto backdrop-blur-sm overflow-visible">
       <form>
         {/* Linha 1 de Filtros */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">

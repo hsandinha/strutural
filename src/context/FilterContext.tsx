@@ -1,25 +1,28 @@
 // src/context/FilterContext.tsx
-
 "use client";
 
 import { createContext, useState, useContext, ReactNode } from "react";
 
-// 1. Definimos o formato do nosso contexto
+// 1. Definimos o tipo exato para os nossos filtros globais
+type GlobalFiltersState = {
+  finalidade: string;
+  lancamento: boolean;
+  tipo: string;
+};
+
+// 2. Definimos como será o nosso contexto, usando o tipo que criamos
 interface FilterContextType {
-  filters: {
-    finalidade: string;
-    tipo: string;
-    lancamento: boolean;
-  };
-  setFilters: React.Dispatch<React.SetStateAction<any>>;
+  filters: GlobalFiltersState;
+  setFilters: React.Dispatch<React.SetStateAction<GlobalFiltersState>>;
 }
 
-// 2. Criamos o Contexto com um valor padrão
+// Criamos o Contexto com um valor padrão
 const FilterContext = createContext<FilterContextType | undefined>(undefined);
 
-// 3. Criamos o "Provedor", o componente que vai guardar o estado
+// O "Provedor" que vai guardar o estado
 export function FilterProvider({ children }: { children: ReactNode }) {
-  const [filters, setFilters] = useState({
+  // 3. Usamos o tipo no nosso estado inicial, em vez de 'any'
+  const [filters, setFilters] = useState<GlobalFiltersState>({
     finalidade: "todos",
     lancamento: true,
     tipo: "todos",
@@ -32,7 +35,7 @@ export function FilterProvider({ children }: { children: ReactNode }) {
   );
 }
 
-// 4. Criamos um "Hook" customizado para facilitar o uso do contexto
+// O "Hook" customizado para facilitar o uso do contexto
 export function useFilters() {
   const context = useContext(FilterContext);
   if (context === undefined) {

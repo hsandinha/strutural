@@ -1,7 +1,7 @@
 // src/app/sobre/page.tsx
 
 import Image from "next/image";
-import { Target, Eye, Heart, ShieldCheck, Users } from "lucide-react";
+import { Target, Eye, Heart } from "lucide-react";
 
 export default function SobrePage() {
   return (
