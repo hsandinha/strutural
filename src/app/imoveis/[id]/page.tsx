@@ -19,12 +19,8 @@ const formatPrice = (price: number) => {
 };
 
 // Esta função recebe os parâmetros da URL (o ID do imóvel)
-export default function PropertyDetailsPage({
-  params,
-}: {
-  params: { id: string };
-}) {
-  // Encontra o imóvel no nosso array de dados falsos usando o ID da URL
+export default function PropertyDetailsPage({ params }: any) {
+  const typedParams = params as { id: string };
   const imovel = mockImoveis.find((p) => p.id === params.id);
 
   // Se o imóvel não for encontrado, exibe uma mensagem
