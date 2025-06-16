@@ -4,6 +4,12 @@ import { mockImoveis } from "@/lib/mockData";
 import Image from "next/image";
 import { Bed, Bath, Scan, MapPin } from "lucide-react";
 
+export async function generateStaticParams() {
+  return mockImoveis.map((imovel) => ({
+    id: imovel.id,
+  }));
+}
+
 // Função para formatar o preço
 const formatPrice = (price: number) => {
   return new Intl.NumberFormat("pt-BR", {
