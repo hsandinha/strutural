@@ -5,6 +5,7 @@ import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import { Header } from "@/components/Header";
 import { FloatingWhatsAppButton } from "@/components/FloatingWhatsAppButton";
+import { FilterProvider } from "@/context/FilterContext";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -27,14 +28,13 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    // A alteração é aqui, na propriedade 'suppressHydrationWarning' 👇
     <html lang="pt-BR" suppressHydrationWarning>
-      <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased`}
-      >
-        <Header />
-        {children}
-        <FloatingWhatsAppButton />
+      <body>
+        <FilterProvider>
+          <Header />
+          <main>{children}</main>
+          <FloatingWhatsAppButton />
+        </FilterProvider>
       </body>
     </html>
   );

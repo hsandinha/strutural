@@ -1,27 +1,55 @@
-"use client"; // 1. A linha mais importante: torna a página interativa.
+// src/app/page.tsx
 
-import { useState } from "react"; // 2. Importa o hook para controlar o estado
+"use client";
+
+import { useState } from "react";
 import { mockImoveis } from "@/lib/mockData";
-import { PropertiesCarousel } from "@/components/PropertiesCarousel";
+import { Imovel } from "@/types";
+
+import { Header } from "@/components/Header";
 import { SearchBar } from "@/components/SearchBar";
+import { PropertiesCarousel } from "@/components/PropertiesCarousel";
 
 export default function HomePage() {
-  // 3. Cria a "memória" para saber qual filtro está ativo. Começa com 'Lançamentos'.
-  const [activeFilter, setActiveFilter] = useState("Lançamentos");
+  // 1. Um único estado para controlar TODOS os filtros
+  const [filters, setFilters] = useState({
+    // 'view' controla as abas (Lançamentos, Comprar, Alugar)
+    view: "Lançamentos",
+    // 'tipo' controla o filtro do submenu (apartamento, casa, etc)
+    tipo: "todos",
+  });
 
-  // 4. Filtra a lista de imóveis ANTES de exibi-la, com base no filtro ativo.
-  const filteredProperties = mockImoveis.filter((imovel) => {
-    if (activeFilter === "Lançamentos") {
-      // Assumindo que 'Lançamentos' são os imóveis em destaque
-      return imovel.emDestaque === true;
+  // 2. Uma única função para atualizar qualquer filtro
+  const handleFilterChange = (filterType: string, value: string) => {
+    console.log(`Filtro acionado: ${filterType} = ${value}`); // Para teste
+
+    // Se o clique veio dos submenus COMPRAR/ALUGAR, mudamos a 'view' e o 'tipo'
+    if (filterType === "comprar" || filterType === "alugar") {
+      setFilters({ view: filterType, tipo: value });
+    } else {
+      // Para outros filtros (como as abas), atualizamos o filtro correspondente
+      setFilters((prevFilters) => ({
+        ...prevFilters,
+        [filterType]: value,
+      }));
     }
-    if (activeFilter === "Comprar") {
-      return imovel.finalidade === "Comprar";
+  };
+
+  // 3. Lógica de filtro unificada
+  const filteredProperties = mockImoveis.filter((imovel: Imovel) => {
+    let viewMatch = false;
+    if (filters.view === "Lançamentos") {
+      viewMatch = imovel.emDestaque === true;
+    } else if (filters.view === "comprar") {
+      viewMatch = imovel.finalidade.toLowerCase() === "comprar";
+    } else if (filters.view === "alugar") {
+      viewMatch = imovel.finalidade.toLowerCase() === "alugar";
     }
-    if (activeFilter === "Alugar") {
-      return imovel.finalidade === "Alugar";
-    }
-    return true;
+
+    const tipoMatch =
+      filters.tipo === "todos" || imovel.tipo?.toLowerCase() === filters.tipo;
+
+    return viewMatch && tipoMatch;
   });
 
   return (
@@ -42,12 +70,12 @@ export default function HomePage() {
           Imóveis em Destaque
         </h2>
 
-        {/* 5. OPÇÕES DE FILTRO COM O ESTILO CORRETO E FUNCIONALIDADE */}
+        {/* Abas da página que agora também usam a função de filtro principal */}
         <div className="flex justify-center items-center gap-8 mb-10">
           <button
-            onClick={() => setActiveFilter("Lançamentos")}
-            className={`font-medium text-lg text-gray-500 hover:text-blue-600 border-b-2 pb-1 transition-colors duration-300 cursor-pointer ${
-              activeFilter === "Lançamentos"
+            onClick={() => handleFilterChange("view", "Lançamentos")}
+            className={`font-medium text-lg ... ${
+              filters.view === "Lançamentos"
                 ? "border-blue-600 text-blue-600"
                 : "border-transparent"
             }`}
@@ -55,9 +83,9 @@ export default function HomePage() {
             Lançamentos
           </button>
           <button
-            onClick={() => setActiveFilter("Comprar")}
-            className={`font-medium text-lg text-gray-500 hover:text-blue-600 border-b-2 pb-1 transition-colors duration-300 cursor-pointer ${
-              activeFilter === "Comprar"
+            onClick={() => handleFilterChange("view", "comprar")}
+            className={`font-medium text-lg ... ${
+              filters.view === "comprar"
                 ? "border-blue-600 text-blue-600"
                 : "border-transparent"
             }`}
@@ -65,9 +93,9 @@ export default function HomePage() {
             Comprar
           </button>
           <button
-            onClick={() => setActiveFilter("Alugar")}
-            className={`font-medium text-lg text-gray-500 hover:text-blue-600 border-b-2 pb-1 transition-colors duration-300 cursor-pointer ${
-              activeFilter === "Alugar"
+            onClick={() => handleFilterChange("view", "alugar")}
+            className={`font-medium text-lg ... ${
+              filters.view === "alugar"
                 ? "border-blue-600 text-blue-600"
                 : "border-transparent"
             }`}
@@ -76,10 +104,8 @@ export default function HomePage() {
           </button>
         </div>
 
-        {/* 6. GRID DE CARDS EXIBINDO A LISTA JÁ FILTRADA */}
-        <div>
-          <PropertiesCarousel properties={filteredProperties} />
-        </div>
+        {/* Carrossel exibindo a lista final filtrada */}
+        <PropertiesCarousel properties={filteredProperties} />
       </section>
     </main>
   );

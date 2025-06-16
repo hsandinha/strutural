@@ -2,6 +2,7 @@
 export interface Imovel {
   id: string;
   titulo: string;
+  tipo: string;
   finalidade: string;
   descricao: string;
   preco: number;
