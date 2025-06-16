@@ -60,7 +60,11 @@ export default function HomePage() {
           <h1 className="text-4xl text-white font-bold text-center mb-8">
             Imóveis para venda e aluguel
           </h1>
-          <SearchBar />
+          <SearchBar
+            onSearch={() => {
+              /* Na home, o botão de busca não faz nada por enquanto */
+            }}
+          />
         </div>
       </section>
 
