@@ -3,6 +3,9 @@
 import { mockImoveis } from "@/lib/mockData";
 import Image from "next/image";
 import { Bed, Bath, Scan, MapPin } from "lucide-react";
+interface PropertyDetailsParams {
+  params: { id: string };
+}
 
 export async function generateStaticParams() {
   return mockImoveis.map((imovel) => ({
@@ -19,9 +22,9 @@ const formatPrice = (price: number) => {
 };
 
 // Esta função recebe os parâmetros da URL (o ID do imóvel)
-export default function PropertyDetailsPage({ params }: any) {
-  const typedParams = params as { id: string };
-  const imovel = mockImoveis.find((p) => p.id === params.id);
+export default function PropertyDetailsPage({ params }: PropertyDetailsParams) {
+  const { id } = params; // Extrai o ID diretamente
+  const imovel = mockImoveis.find((p) => p.id === id);
 
   // Se o imóvel não for encontrado, exibe uma mensagem
   if (!imovel) {
