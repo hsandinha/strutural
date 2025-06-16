@@ -106,7 +106,7 @@ export default function CadastrarImovelPage() {
                 {/* Primeira linha */}
                 <div className="mb-4">
                   <select className="w-full bg-white border border-gray-200 rounded-lg h-14 px-4 text-gray-700 placeholder-gray-400 focus:outline-none focus:border-blue-400 transition">
-                    <option value="" disabled selected>
+                    <option value="" disabled>
                       *Selecione a finalidade
                     </option>
                     <option value="vender">Vender</option>
@@ -117,7 +117,7 @@ export default function CadastrarImovelPage() {
                 {/* Segunda linha */}
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
                   <select className="w-full bg-white border border-gray-200 rounded-lg h-14 px-4 text-gray-700 placeholder-gray-400 focus:outline-none focus:border-blue-400 transition">
-                    <option value="" disabled selected>
+                    <option value="" disabled>
                       Selecione o tipo
                     </option>
                     <option value="9">Andar corrido</option>
@@ -148,7 +148,7 @@ export default function CadastrarImovelPage() {
                 {/* Terceira linha */}
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
                   <select className="w-full bg-white border border-gray-200 rounded-lg h-14 px-4 text-gray-700 placeholder-gray-400 focus:outline-none focus:border-blue-400 transition">
-                    <option value="" disabled selected>
+                    <option value="" disabled>
                       Destinação
                     </option>
                     <option value="1">Residencial</option>
