@@ -3,7 +3,6 @@
 import Link from "next/link";
 import Image from "next/image";
 import { NavItemWithDropdown } from "./NavItemWithDropdown";
-import { Heart } from "lucide-react";
 
 // Itens do submenu
 const propertyTypes = [

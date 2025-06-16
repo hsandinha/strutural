@@ -14,3 +14,12 @@ export interface Imovel {
   emDestaque: boolean;
   fotos: string[];
 }
+
+export type SearchFilters = {
+  finalidade: string;
+  tipo: string;
+  localizacao: string;
+  quartos: string;
+  valorMin: string;
+  valorMax: string;
+};

@@ -2,14 +2,14 @@
 "use client";
 
 import { useState } from "react";
-import { Search } from "lucide-react";
+import type { SearchFilters } from "@/types";
 
 // O componente agora recebe uma função 'onSearch' para comunicar os filtros
 export function SearchBar({ onSearch }: { onSearch: (filters: any) => void }) {
   // Estado interno para guardar os valores de cada campo do formulário
-  const [filters, setFilters] = useState({
+  const [filters, setFilters] = useState<SearchFilters>({
     finalidade: "Comprar",
-    tipo: "",
+    tipo: "Todos",
     localizacao: "",
     quartos: "Todos",
     valorMin: "",
