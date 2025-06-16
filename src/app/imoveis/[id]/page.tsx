@@ -50,8 +50,6 @@ export default function PropertyDetailsPage({
             </span>
           </div>
         </div>
-
-        {/* 👇 SEÇÃO DA GALERIA DE FOTOS ADICIONADA DE VOLTA 👇 */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-2 mb-8">
           {imovel.fotos.map((foto, index) => (
             <div
