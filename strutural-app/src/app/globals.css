@@ -1,0 +1,41 @@
+/* src/app/globals.css - VERSÃO FINAL E LIMPA */
+
+@import "tailwindcss";
+
+:root {
+  --background: #ffffff;
+  --foreground: #171717;
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --font-sans: var(--font-geist-sans);
+  --font-mono: var(--font-geist-mono);
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --background: #0a0a0a;
+    --foreground: #ededed;
+  }
+}
+
+body {
+  background: var(--background);
+  color: var(--foreground);
+}
+
+@layer components {
+  .filter-tab {
+    @apply font-medium text-lg text-gray-500 hover:text-blue-600 border-b-2 pb-1 transition-colors duration-300;
+  }
+}
+
+.swiper-pagination-bullets.swiper-pagination-horizontal {
+  bottom: -2px !important;
+}
+
+.swiper-container {
+  padding-bottom: 40px; /* ou o valor que combine com o bottom dos bullets */
+}
