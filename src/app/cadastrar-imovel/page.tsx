@@ -13,8 +13,7 @@ export default function CadastrarImovelPage() {
           {/* Coluna Esquerda - alinhada ao topo */}
           <div className="flex flex-col justify-start h-full">
             <h2 className="text-5xl font-extrabold text-gray-800 mb-4 leading-tight">
-              Ajudamos você a alugar ou vender seu imóvel de forma rápida e
-              fácil
+              Ajudamos você a vender seu imóvel de forma rápida e fácil
             </h2>
             <p className="text-xl text-gray-500 mb-10">
               Publique nos portais do mercado imobiliário.
@@ -110,7 +109,6 @@ export default function CadastrarImovelPage() {
                       *Selecione a finalidade
                     </option>
                     <option value="vender">Vender</option>
-                    <option value="alugar">Alugar</option>
                   </select>
                 </div>
 

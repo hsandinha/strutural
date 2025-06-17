@@ -32,18 +32,18 @@ const bairrosDestaque = [
     href: "/comprar?bairro=vila-da-serra",
   },
   {
-    name: "Vale do Sereno",
+    name: "Cruzeiro",
     city: "Belo Horizonte",
     imageUrl:
       "https://images.unsplash.com/photo-1573516016335-3c44c6930519?q=80&w=1932",
-    href: "/comprar?bairro=vale-do-sereno",
+    href: "/comprar?bairro=Cruzeiro",
   },
   {
-    name: "Vale dos Cristais",
+    name: "Lourdes",
     city: "Belo Horizonte",
     imageUrl:
       "https://images.unsplash.com/photo-1599881225532-8583a36b3244?q=80&w=2070",
-    href: "/comprar?bairro=vale-dos-cristais",
+    href: "/comprar?bairro=Lourdes",
   },
   {
     name: "Serra",
@@ -66,13 +66,69 @@ const bairrosDestaque = [
       "https://images.unsplash.com/photo-1573516016335-3c44c6930519?q=80&w=1932",
     href: "/comprar?bairro=anchieta",
   },
+  {
+    name: "Santo Antonio",
+    city: "Belo Horizonte",
+    imageUrl:
+      "https://images.unsplash.com/photo-1599881225532-8583a36b3244?q=80&w=2070",
+    href: "/comprar?bairro=santoAntonio",
+  },
+  {
+    name: "São Pedro",
+    city: "Belo Horizonte",
+    imageUrl:
+      "https://images.unsplash.com/photo-1599881225532-8583a36b3244?q=80&w=2070",
+    href: "/comprar?bairro=SaoPedro",
+  },
+  {
+    name: "Luxemburgo",
+    city: "Belo Horizonte",
+    imageUrl:
+      "https://images.unsplash.com/photo-1573516016335-3c44c6930519?q=80&w=1932",
+    href: "/comprar?bairro=luxemburgo",
+  },
+  {
+    name: "Gutierrez",
+    city: "Belo Horizonte",
+    imageUrl:
+      "https://images.unsplash.com/photo-1573516016335-3c44c6930519?q=80&w=1932",
+    href: "/comprar?bairro=gutierrez",
+  },
+  {
+    name: "Funcionarios",
+    city: "Belo Horizonte",
+    imageUrl:
+      "https://images.unsplash.com/photo-1599881225532-8583a36b3244?q=80&w=2070",
+    href: "/comprar?bairro=funcionarios",
+  },
+  {
+    name: "Santo Agostinho",
+    city: "Belo Horizonte",
+    imageUrl:
+      "https://images.unsplash.com/photo-1599881225532-8583a36b3244?q=80&w=2070",
+    href: "/comprar?bairro=santoAgostinho",
+  },
+  {
+    name: "Savassi",
+    city: "Belo Horizonte",
+    imageUrl:
+      "https://images.unsplash.com/photo-1573516016335-3c44c6930519?q=80&w=1932",
+    href: "/comprar?bairro=savassi",
+  },
+  {
+    name: "Condominios Nova Lima",
+    city: "Belo Horizonte",
+    imageUrl:
+      "https://images.unsplash.com/photo-1573516016335-3c44c6930519?q=80&w=1932",
+    href: "/comprar?bairro=condominio",
+  },
   // Adicione os outros bairros se desejar
 ];
 
 export default function HomePage() {
   // 1. Um único estado para controlar TODOS os filtros
   const [filters, setFilters] = useState({
-    // 'view' controla as abas (Lançamentos, Comprar, Alugar)
+    // 'view' controla as abas (Lançamentos, Comprar)
     view: "Lançamentos",
     // 'tipo' controla o filtro do submenu (apartamento, casa, etc)
     tipo: "todos",
@@ -82,8 +138,8 @@ export default function HomePage() {
   const handleFilterChange = (filterType: string, value: string) => {
     console.log(`Filtro acionado: ${filterType} = ${value}`); // Para teste
 
-    // Se o clique veio dos submenus COMPRAR/ALUGAR, mudamos a 'view' e o 'tipo'
-    if (filterType === "comprar" || filterType === "alugar") {
+    // Se o clique veio dos submenus COMPRAR, mudamos a 'view' e o 'tipo'
+    if (filterType === "comprar") {
       setFilters({ view: filterType, tipo: value });
     } else {
       // Para outros filtros (como as abas), atualizamos o filtro correspondente
@@ -101,8 +157,6 @@ export default function HomePage() {
       viewMatch = imovel.emDestaque === true;
     } else if (filters.view === "comprar") {
       viewMatch = imovel.finalidade.toLowerCase() === "comprar";
-    } else if (filters.view === "alugar") {
-      viewMatch = imovel.finalidade.toLowerCase() === "alugar";
     }
 
     const tipoMatch =
@@ -117,7 +171,7 @@ export default function HomePage() {
       <section className="relative py-12 bg-cover bg-center bg-[url('/fundo.jpg')]">
         <div className="relative z-10 container mx-auto px-4 flex flex-col items-center justify-center min-h-[500px] py-12 opacity-70">
           <h1 className="text-4xl text-white font-bold text-center mb-8">
-            Imóveis para venda e aluguel
+            Imóveis para Venda
           </h1>
           <SearchBar
             onSearch={() => {
@@ -135,7 +189,7 @@ export default function HomePage() {
 
         {/* Abas da página que agora também usam a função de filtro principal */}
         <div className="flex justify-center items-center gap-8 mb-10 border-b border-gray-200">
-          {["Lançamentos", "comprar", "alugar"].map((tab) => (
+          {["Lançamentos", "comprar"].map((tab) => (
             <button
               key={tab}
               onClick={() => handleFilterChange("view", tab)}

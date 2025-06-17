@@ -53,7 +53,6 @@ export function SearchBar({
               className="w-full border-gray-300 rounded-md p-3 text-gray-700 shadow-sm"
             >
               <option>Comprar</option>
-              <option>Alugar</option>
             </select>
           </div>
           <div>

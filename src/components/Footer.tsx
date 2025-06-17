@@ -72,9 +72,6 @@ export function Footer() {
               >
                 <Instagram />
               </a>
-              <a href="#" aria-label="LinkedIn" className="hover:text-white">
-                <Linkedin />
-              </a>
             </div>
             <h3 className="font-bold text-white mt-6 mb-2">Contatos</h3>
             <p className="text-sm">contato@struturalimoveis.com.br</p>
@@ -89,7 +86,14 @@ export function Footer() {
             &copy; {new Date().getFullYear()} Strutural Imóveis. Todos os
             direitos reservados.
           </p>
-          <p>Desenvolvido com por Hebert Sandinha</p>
+          <p>
+            Desenvolvido com por{" "}
+            <a href="#" aria-label="LinkedIn" className="hover:text-white">
+              {" "}
+              <Linkedin />{" "}
+            </a>
+            Hebert Sandinha
+          </p>
         </div>
       </div>
     </footer>

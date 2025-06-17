@@ -37,8 +37,6 @@ export function Header() {
         <div className="hidden lg:flex flex-col items-end">
           <nav className="flex items-center space-x-6 text-xs text-gray-500 mb-2">
             <NavItemWithDropdown title="COMPRAR" subItems={propertyTypes} />
-            <NavItemWithDropdown title="ALUGAR" subItems={propertyTypes} />
-
             <Link
               href="/cadastrar-imovel"
               className="text-gray-600 hover:text-black font-medium border-b-2 border-transparent hover:border-blue-600 pb-1 transition-all duration-300 cursor-pointer"
