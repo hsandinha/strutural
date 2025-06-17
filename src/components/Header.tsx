@@ -93,7 +93,7 @@ export function Header() {
       <div
         className={`lg:hidden absolute top-full left-0 w-full bg-white shadow-lg border-t transition-all duration-300 ${
           isMenuOpen
-            ? "max-h-96 opacity-100"
+            ? "max-h-[500px] opacity-100"
             : "max-h-0 opacity-0 overflow-hidden"
         }`}
       >
