@@ -15,15 +15,10 @@ export function Footer() {
               <Image
                 src="/strutural1.png" // Crie uma versão branca do seu logo
                 alt="Logo Strutural Imóveis"
-                width={180}
-                height={40}
+                width={500}
+                height={200}
               />
             </Link>
-            <p className="mt-4 max-w-md">
-              Sua parceira de confiança para encontrar o imóvel ideal.
-              Oferecemos consultoria especializada e as melhores oportunidades
-              do mercado.
-            </p>
           </div>
 
           {/* Coluna 2: Links Rápidos */}
