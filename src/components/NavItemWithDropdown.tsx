@@ -53,7 +53,7 @@ export function NavItemWithDropdown({
       onMouseEnter={handleMouseEnter}
       onMouseLeave={handleMouseLeave}
     >
-      <button className="flex items-center gap-1 text-gray-600 hover:text-black font-medium focus:outline-none border-b-2 border-transparent hover:border-red-600 pb-1 transition-all duration-300">
+      <button className="flex items-center gap-1 text-gray-600 hover:text-black font-medium focus:outline-none border-b-2 border-transparent hover:border-blue-600 pb-1 transition-all duration-300 cursor-pointer">
         {title}
         <ChevronDown
           size={16}
@@ -64,7 +64,7 @@ export function NavItemWithDropdown({
       </button>
 
       {isOpen && (
-        <div className="absolute top-full left-1/2 -translate-x-1/2 mt-4 w-48 bg-white rounded-md shadow-lg border z-30">
+        <div className="absolute top-full left-1/2 -translate-x-1/2 mt-4 w-48 bg-white rounded-md shadow-lg border z-30 cursor-pointer">
           <div className="p-2">
             {subItems.map((item) => (
               <button

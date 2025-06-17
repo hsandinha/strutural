@@ -1,20 +1,14 @@
-// src/app/layout.tsx
-
 import type { Metadata } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
+import { Inter } from "next/font/google";
+
 import "./globals.css";
 import { Header } from "@/components/Header";
 import { FloatingWhatsAppButton } from "@/components/FloatingWhatsAppButton";
 import { FilterProvider } from "@/context/FilterContext";
 
-const geistSans = Geist({
-  variable: "--font-geist-sans",
+const inter = Inter({
   subsets: ["latin"],
-});
-
-const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
-  subsets: ["latin"],
+  display: "swap", // Opcional: melhora o carregamento
 });
 
 export const metadata: Metadata = {
@@ -24,17 +18,15 @@ export const metadata: Metadata = {
 
 export default function RootLayout({
   children,
-}: Readonly<{
+}: {
   children: React.ReactNode;
-}>) {
+}) {
   return (
-    <html lang="pt-BR" suppressHydrationWarning>
-      <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased`}
-      >
+    <html lang="pt-BR">
+      <body className={inter.className}>
         <FilterProvider>
           <Header />
-          <main>{children}</main>
+          {children}
           <FloatingWhatsAppButton />
         </FilterProvider>
       </body>

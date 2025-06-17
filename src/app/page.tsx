@@ -54,7 +54,7 @@ export default function HomePage() {
     <main>
       {/* Seção da Barra de Busca */}
       <section className="relative py-12 bg-cover bg-center bg-[url('/fundo.jpg')]">
-        <div className="relative z-10 container mx-auto px-4 flex flex-col items-center justify-center min-h-[500px] py-12">
+        <div className="relative z-10 container mx-auto px-4 flex flex-col items-center justify-center min-h-[500px] py-12 opacity-70">
           <h1 className="text-4xl text-white font-bold text-center mb-8">
             Imóveis para venda e aluguel
           </h1>
@@ -73,37 +73,24 @@ export default function HomePage() {
         </h2>
 
         {/* Abas da página que agora também usam a função de filtro principal */}
-        <div className="flex justify-center items-center gap-8 mb-10">
-          <button
-            onClick={() => handleFilterChange("view", "Lançamentos")}
-            className={`font-medium text-lg ... ${
-              filters.view === "Lançamentos"
-                ? "border-blue-600 text-blue-600"
-                : "border-transparent"
-            }`}
-          >
-            Lançamentos
-          </button>
-          <button
-            onClick={() => handleFilterChange("view", "comprar")}
-            className={`font-medium text-lg ... ${
-              filters.view === "comprar"
-                ? "border-blue-600 text-blue-600"
-                : "border-transparent"
-            }`}
-          >
-            Comprar
-          </button>
-          <button
-            onClick={() => handleFilterChange("view", "alugar")}
-            className={`font-medium text-lg ... ${
-              filters.view === "alugar"
-                ? "border-blue-600 text-blue-600"
-                : "border-transparent"
-            }`}
-          >
-            Alugar
-          </button>
+        <div className="flex justify-center items-center gap-8 mb-10 border-b border-gray-200">
+          {["Lançamentos", "comprar", "alugar"].map((tab) => (
+            <button
+              key={tab}
+              onClick={() => handleFilterChange("view", tab)}
+              className={`relative px-4 py-2 font-medium text-lg transition-colors cursor-pointer
+        ${
+          filters.view === tab
+            ? "text-blue-600 after:absolute after:left-0 after:bottom-0 after:w-full after:h-0.5 after:bg-blue-600"
+            : "text-gray-600 hover:text-blue-600"
+        }
+        bg-transparent border-none outline-none
+      `}
+              style={{ background: "none" }}
+            >
+              {tab.charAt(0).toUpperCase() + tab.slice(1)}
+            </button>
+          ))}
         </div>
 
         {/* Carrossel exibindo a lista final filtrada */}

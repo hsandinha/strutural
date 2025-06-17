@@ -7,6 +7,7 @@ export const mockImoveis: Imovel[] = [
     id: "1",
     titulo: "Apartamento Moderno na Savassi",
     finalidade: "Comprar", // <-- Adicionado
+    tipo: "Apartamento",
     descricao:
       "Um apartamento incrível com vista panorâmica e acabamento de primeira linha.",
     preco: 1250000,
@@ -24,6 +25,7 @@ export const mockImoveis: Imovel[] = [
     id: "2",
     titulo: "Casa Espaçosa com Quintal no Buritis",
     finalidade: "Comprar", // <-- Adicionado
+    tipo: "Casa",
     descricao:
       "Perfeita para famílias que buscam conforto e espaço verde, com área gourmet completa.",
     preco: 2500000,
@@ -41,6 +43,7 @@ export const mockImoveis: Imovel[] = [
     id: "3",
     titulo: "Cobertura Duplex para Alugar",
     finalidade: "Alugar", // <-- Adicionado
+    tipo: "Apartamento",
     descricao:
       "Vista deslumbrante da cidade, com piscina privativa e área de lazer completa.",
     preco: 12000, // Preço de aluguel
@@ -58,6 +61,7 @@ export const mockImoveis: Imovel[] = [
     id: "4",
     titulo: "Loja Comercial no Centro",
     finalidade: "Alugar", // <-- Adicionado
+    tipo: "Loja",
     descricao:
       "Ponto comercial excelente com grande fluxo de pessoas, ideal para seu negócio.",
     preco: 4500, // Preço de aluguel
@@ -75,6 +79,7 @@ export const mockImoveis: Imovel[] = [
     id: "5",
     titulo: "Terreno em Condomínio Fechado",
     finalidade: "Comprar", // <-- Adicionado
+    tipo: "Terreno",
     descricao:
       "Ótima oportunidade para construir a casa dos seus sonhos em local seguro e tranquilo.",
     preco: 950000,
@@ -92,6 +97,7 @@ export const mockImoveis: Imovel[] = [
     id: "6",
     titulo: "Apartamento para Alugar no Castelo",
     finalidade: "Alugar", // <-- Adicionado
+    tipo: "Apartamento",
     descricao:
       "Apartamento aconchegante, recém-reformado, próximo a comércios e parques.",
     preco: 2800, // Preço de aluguel
@@ -109,6 +115,7 @@ export const mockImoveis: Imovel[] = [
     id: "7",
     titulo: "Cobertura Duplex para Alugar",
     finalidade: "Alugar", // <-- Adicionado
+    tipo: "Apartamento",
     descricao:
       "Vista deslumbrante da cidade, com piscina privativa e área de lazer completa.",
     preco: 12000, // Preço de aluguel
@@ -126,6 +133,7 @@ export const mockImoveis: Imovel[] = [
     id: "8",
     titulo: "Cobertura Duplex para Alugar",
     finalidade: "Alugar", // <-- Adicionado
+    tipo: "Apartamento",
     descricao:
       "Vista deslumbrante da cidade, com piscina privativa e área de lazer completa.",
     preco: 12000, // Preço de aluguel

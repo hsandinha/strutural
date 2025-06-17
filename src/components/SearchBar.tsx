@@ -147,7 +147,7 @@ export function SearchBar({
         <div className="mt-8 flex justify-center">
           <button
             onClick={handleSearchClick}
-            className="w-full md:w-1/3 bg-gray-900/80 text-white font-bold py-3 px-4 rounded-md hover:bg-gray-900 transition-colors border-2 border-red-600 text-sm tracking-wider"
+            className="w-full md:w-1/3 bg-gray-900/80 text-white font-bold py-3 px-4 rounded-md hover:bg-gray-900 transition-colors border-2 border-blue-600 text-sm tracking-wider"
           >
             BUSCAR IMÓVEIS
           </button>
