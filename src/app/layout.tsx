@@ -23,8 +23,12 @@ export default function RootLayout({
 }) {
   return (
     <html lang="pt-BR">
-      <body>
-        <h1>Olá</h1>
+      <body className={inter.className}>
+        <FilterProvider>
+          <Header />
+          {children}
+          <FloatingWhatsAppButton />
+        </FilterProvider>
       </body>
     </html>
   );
