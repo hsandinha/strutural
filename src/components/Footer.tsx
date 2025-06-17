@@ -13,7 +13,7 @@ export function Footer() {
           <div className="md:col-span-2">
             <Link href="/">
               <Image
-                src="/strutural.png" // Crie uma versão branca do seu logo
+                src="/strutural1.png" // Crie uma versão branca do seu logo
                 alt="Logo Strutural Imóveis"
                 width={180}
                 height={40}
@@ -33,11 +33,6 @@ export function Footer() {
               <li>
                 <Link href="/comprar" className="hover:text-white">
                   Comprar
-                </Link>
-              </li>
-              <li>
-                <Link href="/alugar" className="hover:text-white">
-                  Alugar
                 </Link>
               </li>
               <li>
@@ -62,15 +57,23 @@ export function Footer() {
           <div>
             <h3 className="font-bold text-white mb-4">Siga-nos</h3>
             <div className="flex space-x-4">
-              <a href="#" aria-label="Facebook" className="hover:text-white">
-                <Facebook />
-              </a>
               <a
                 href="https://www.instagram.com/struturalimoveis/"
                 aria-label="Instagram"
                 className="hover:text-white"
               >
                 <Instagram />
+              </a>
+              <a href="#" aria-label="Facebook" className="hover:text-white">
+                <Facebook />
+              </a>
+
+              <a
+                href="https://www.instagram.com/struturalimoveis/"
+                aria-label="Instagram"
+                className="hover:text-white"
+              >
+                <Linkedin />
               </a>
             </div>
             <h3 className="font-bold text-white mt-6 mb-2">Contatos</h3>
@@ -86,14 +89,7 @@ export function Footer() {
             &copy; {new Date().getFullYear()} Strutural Imóveis. Todos os
             direitos reservados.
           </p>
-          <p>
-            Desenvolvido com por{" "}
-            <a href="#" aria-label="LinkedIn" className="hover:text-white">
-              {" "}
-              <Linkedin />{" "}
-            </a>
-            Hebert Sandinha
-          </p>
+          <p>Desenvolvido com por Hebert Sandinha</p>
         </div>
       </div>
     </footer>
