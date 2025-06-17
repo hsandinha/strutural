@@ -5,6 +5,7 @@ import "./globals.css";
 import { Header } from "@/components/Header";
 import { FloatingWhatsAppButton } from "@/components/FloatingWhatsAppButton";
 import { FilterProvider } from "@/context/FilterContext";
+import { Footer } from "@/components/Footer";
 
 const inter = Inter({
   subsets: ["latin"],
@@ -26,7 +27,8 @@ export default function RootLayout({
       <body className={inter.className}>
         <FilterProvider>
           <Header />
-          {children}
+          <main className="flex-grow">{children}</main>
+          <Footer />
           <FloatingWhatsAppButton />
         </FilterProvider>
       </body>

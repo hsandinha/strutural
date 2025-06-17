@@ -7,6 +7,67 @@ import { mockImoveis } from "@/lib/mockData";
 import { Imovel } from "@/types";
 import { SearchBar } from "@/components/SearchBar";
 import { PropertiesCarousel } from "@/components/PropertiesCarousel";
+import { NeighborhoodCard } from "@/components/NeighborhoodCard";
+
+const bairrosDestaque = [
+  {
+    name: "Mangabeiras",
+    city: "Belo Horizonte",
+    imageUrl:
+      "https://images.unsplash.com/photo-1573516016335-3c44c6930519?q=80&w=1932",
+    href: "/comprar?bairro=mangabeiras",
+  },
+  {
+    name: "Belvedere",
+    city: "Belo Horizonte",
+    imageUrl:
+      "https://images.unsplash.com/photo-1599881225532-8583a36b3244?q=80&w=2070",
+    href: "/comprar?bairro=belvedere",
+  },
+  {
+    name: "Vila da Serra",
+    city: "Belo Horizonte",
+    imageUrl:
+      "https://images.unsplash.com/photo-1599881225532-8583a36b3244?q=80&w=2070",
+    href: "/comprar?bairro=vila-da-serra",
+  },
+  {
+    name: "Vale do Sereno",
+    city: "Belo Horizonte",
+    imageUrl:
+      "https://images.unsplash.com/photo-1573516016335-3c44c6930519?q=80&w=1932",
+    href: "/comprar?bairro=vale-do-sereno",
+  },
+  {
+    name: "Vale dos Cristais",
+    city: "Belo Horizonte",
+    imageUrl:
+      "https://images.unsplash.com/photo-1599881225532-8583a36b3244?q=80&w=2070",
+    href: "/comprar?bairro=vale-dos-cristais",
+  },
+  {
+    name: "Serra",
+    city: "Belo Horizonte",
+    imageUrl:
+      "https://images.unsplash.com/photo-1599881225532-8583a36b3244?q=80&w=2070",
+    href: "/comprar?bairro=serra",
+  },
+  {
+    name: "Sion",
+    city: "Belo Horizonte",
+    imageUrl:
+      "https://images.unsplash.com/photo-1573516016335-3c44c6930519?q=80&w=1932",
+    href: "/comprar?bairro=sion",
+  },
+  {
+    name: "Anchieta",
+    city: "Belo Horizonte",
+    imageUrl:
+      "https://images.unsplash.com/photo-1573516016335-3c44c6930519?q=80&w=1932",
+    href: "/comprar?bairro=anchieta",
+  },
+  // Adicione os outros bairros se desejar
+];
 
 export default function HomePage() {
   // 1. Um único estado para controlar TODOS os filtros
@@ -95,6 +156,24 @@ export default function HomePage() {
 
         {/* Carrossel exibindo a lista final filtrada */}
         <PropertiesCarousel properties={filteredProperties} />
+      </section>
+      <section className="bg-gray-50 py-16">
+        <div className="container mx-auto px-4">
+          <h2 className="text-4xl font-bold text-gray-800 mb-10 text-center">
+            Bairros em Destaque
+          </h2>
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8">
+            {bairrosDestaque.map((bairro) => (
+              <NeighborhoodCard
+                key={bairro.name}
+                name={bairro.name}
+                city={bairro.city}
+                imageUrl={bairro.imageUrl}
+                href={bairro.href}
+              />
+            ))}
+          </div>
+        </div>
       </section>
     </main>
   );
