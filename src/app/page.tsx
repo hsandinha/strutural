@@ -67,7 +67,7 @@ const bairrosDestaque = [
   {
     name: "São Pedro",
     city: "Belo Horizonte",
-    imageUrl: "/Saopedro.jpg",
+    imageUrl: "/saopedro.jpg",
     href: "/comprar?bairro=SaoPedro",
   },
   {
