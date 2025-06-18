@@ -44,7 +44,7 @@ const bairrosDestaque = [
   {
     name: "Lourdes",
     city: "Belo Horizonte",
-    imageUrl: "/lourdes.png",
+    imageUrl: "/lourdes.jpeg",
     href: "/comprar?bairro=Lourdes",
   },
   {
