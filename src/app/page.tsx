@@ -13,113 +13,97 @@ const bairrosDestaque = [
   {
     name: "Mangabeiras",
     city: "Belo Horizonte",
-    imageUrl:
-      "https://images.unsplash.com/photo-1573516016335-3c44c6930519?q=80&w=1932",
+    imageUrl: "/mangabeiras.jpeg",
     href: "/comprar?bairro=mangabeiras",
   },
   {
     name: "Belvedere",
     city: "Belo Horizonte",
-    imageUrl:
-      "https://images.unsplash.com/photo-1599881225532-8583a36b3244?q=80&w=2070",
+    imageUrl: "/belvedere.jpg",
     href: "/comprar?bairro=belvedere",
   },
   {
     name: "Vila da Serra",
-    city: "Belo Horizonte",
-    imageUrl:
-      "https://images.unsplash.com/photo-1599881225532-8583a36b3244?q=80&w=2070",
+    city: "Nova Lima",
+    imageUrl: "/viladaserra.jpg",
     href: "/comprar?bairro=vila-da-serra",
   },
   {
     name: "Cruzeiro",
     city: "Belo Horizonte",
-    imageUrl:
-      "https://images.unsplash.com/photo-1573516016335-3c44c6930519?q=80&w=1932",
+    imageUrl: "/cruzeiro.jpg",
     href: "/comprar?bairro=Cruzeiro",
   },
   {
     name: "Lourdes",
     city: "Belo Horizonte",
-    imageUrl:
-      "https://images.unsplash.com/photo-1599881225532-8583a36b3244?q=80&w=2070",
+    imageUrl: "/Lourdes.png",
     href: "/comprar?bairro=Lourdes",
   },
   {
     name: "Serra",
     city: "Belo Horizonte",
-    imageUrl:
-      "https://images.unsplash.com/photo-1599881225532-8583a36b3244?q=80&w=2070",
+    imageUrl: "/serra.jpg",
     href: "/comprar?bairro=serra",
   },
   {
     name: "Sion",
     city: "Belo Horizonte",
-    imageUrl:
-      "https://images.unsplash.com/photo-1573516016335-3c44c6930519?q=80&w=1932",
+    imageUrl: "/sion.png",
     href: "/comprar?bairro=sion",
   },
   {
     name: "Anchieta",
     city: "Belo Horizonte",
-    imageUrl:
-      "https://images.unsplash.com/photo-1573516016335-3c44c6930519?q=80&w=1932",
+    imageUrl: "/anchieta.png",
     href: "/comprar?bairro=anchieta",
   },
   {
     name: "Santo Antonio",
     city: "Belo Horizonte",
-    imageUrl:
-      "https://images.unsplash.com/photo-1599881225532-8583a36b3244?q=80&w=2070",
+    imageUrl: "/santoAntonio.jpg",
     href: "/comprar?bairro=santoAntonio",
   },
   {
     name: "São Pedro",
     city: "Belo Horizonte",
-    imageUrl:
-      "https://images.unsplash.com/photo-1599881225532-8583a36b3244?q=80&w=2070",
+    imageUrl: "/SaoPedro.jpg",
     href: "/comprar?bairro=SaoPedro",
   },
   {
     name: "Luxemburgo",
     city: "Belo Horizonte",
-    imageUrl:
-      "https://images.unsplash.com/photo-1573516016335-3c44c6930519?q=80&w=1932",
+    imageUrl: "/luxemburgo.jpeg",
     href: "/comprar?bairro=luxemburgo",
   },
   {
     name: "Gutierrez",
     city: "Belo Horizonte",
-    imageUrl:
-      "https://images.unsplash.com/photo-1573516016335-3c44c6930519?q=80&w=1932",
+    imageUrl: "/gutierrez.jpg",
     href: "/comprar?bairro=gutierrez",
   },
   {
     name: "Funcionarios",
     city: "Belo Horizonte",
-    imageUrl:
-      "https://images.unsplash.com/photo-1599881225532-8583a36b3244?q=80&w=2070",
+    imageUrl: "/funcionarios.jpg",
     href: "/comprar?bairro=funcionarios",
   },
   {
     name: "Santo Agostinho",
     city: "Belo Horizonte",
-    imageUrl:
-      "https://images.unsplash.com/photo-1599881225532-8583a36b3244?q=80&w=2070",
+    imageUrl: "/santoAntonio.jpg",
     href: "/comprar?bairro=santoAgostinho",
   },
   {
     name: "Savassi",
     city: "Belo Horizonte",
-    imageUrl:
-      "https://images.unsplash.com/photo-1573516016335-3c44c6930519?q=80&w=1932",
+    imageUrl: "/savassi.jpg",
     href: "/comprar?bairro=savassi",
   },
   {
     name: "Condominios Nova Lima",
     city: "Belo Horizonte",
-    imageUrl:
-      "https://images.unsplash.com/photo-1573516016335-3c44c6930519?q=80&w=1932",
+    imageUrl: "/casa.jpg",
     href: "/comprar?bairro=condominio",
   },
   // Adicione os outros bairros se desejar
