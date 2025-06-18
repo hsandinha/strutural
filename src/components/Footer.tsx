@@ -77,9 +77,36 @@ export function Footer() {
               </a>
             </div>
             <h3 className="font-bold text-white mt-6 mb-2">Contatos</h3>
-            <p className="text-sm">contato@struturalimoveis.com.br</p>
-            <p className="text-sm">Adhimar Salgado Chagas (31) 9 9417-8066</p>
-            <p className="text-sm">Simone Ferreira Campos (31) 9 9572-1272</p>
+            <p className="text-sm">
+              <a
+                href="mailto:hebertsandinhacorretor@gmail.com"
+                className="text-sm"
+              >
+                contato@struturalimoveis.com.br
+              </a>
+            </p>
+            <p className="text-sm">
+              Adhimar Salgado Chagas{" "}
+              <a
+                href="https://wa.me/5531994178066"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-sm"
+              >
+                (31) 99417-8066
+              </a>
+            </p>
+            <p className="text-sm">
+              Simone Ferreira Campos{" "}
+              <a
+                href="https://wa.me/5531995721272"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-sm"
+              >
+                (31) 9 9572-1272
+              </a>
+            </p>
           </div>
         </div>
       </div>

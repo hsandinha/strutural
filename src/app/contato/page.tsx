@@ -43,12 +43,12 @@ export default function ContatoPage() {
                 <div>
                   <span className="block text-sm text-gray-500">WhatsApp</span>
                   <a
-                    href="https://wa.me/5531984005308"
+                    href="https://wa.me/3155994178066"
                     target="_blank"
                     rel="noopener noreferrer"
                     className="block text-base text-green-600 font-semibold hover:underline"
                   >
-                    (31) 98400-5308
+                    (31) 99417-8066
                   </a>
                 </div>
                 <div>
@@ -57,7 +57,7 @@ export default function ContatoPage() {
                     href="mailto:hebertsandinhacorretor@gmail.com"
                     className="block text-base text-gray-800 font-semibold hover:underline"
                   >
-                    hebertsandinhacorretor@gmail.com
+                    contato@struturalimoveis.com.br
                   </a>
                 </div>
               </div>

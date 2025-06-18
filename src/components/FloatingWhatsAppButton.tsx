@@ -4,7 +4,7 @@ import Link from "next/link";
 import { FaWhatsapp } from "react-icons/fa"; // Importando o ícone do WhatsApp
 
 export function FloatingWhatsAppButton() {
-  const phoneNumber = "5531984005308"; // 👈 SUBSTITUA PELO SEU NÚMERO
+  const phoneNumber = "5531994178066"; // 👈 SUBSTITUA PELO SEU NÚMERO
   const message = "Olá! Tenho interesse em um dos seus imóveis.";
 
   // Formata a mensagem para ser usada em uma URL
