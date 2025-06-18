@@ -10,11 +10,12 @@ import { PropertiesCarousel } from "@/components/PropertiesCarousel";
 import { NeighborhoodCard } from "@/components/NeighborhoodCard";
 
 const bairrosDestaque = [
+  // --- Belo Horizonte ---
   {
-    name: "Mangabeiras",
+    name: "Anchieta",
     city: "Belo Horizonte",
-    imageUrl: "/mangabeiras.jpeg",
-    href: "/comprar?bairro=mangabeiras",
+    imageUrl: "/anchieta.png",
+    href: "/comprar?bairro=anchieta",
   },
   {
     name: "Belvedere",
@@ -23,16 +24,22 @@ const bairrosDestaque = [
     href: "/comprar?bairro=belvedere",
   },
   {
-    name: "Vila da Serra",
-    city: "Nova Lima",
-    imageUrl: "/viladaserra.jpg",
-    href: "/comprar?bairro=vila-da-serra",
-  },
-  {
     name: "Cruzeiro",
     city: "Belo Horizonte",
     imageUrl: "/cruzeiro.jpg",
     href: "/comprar?bairro=Cruzeiro",
+  },
+  {
+    name: "Funcionarios",
+    city: "Belo Horizonte",
+    imageUrl: "/funcionarios.jpg",
+    href: "/comprar?bairro=funcionarios",
+  },
+  {
+    name: "Gutierrez",
+    city: "Belo Horizonte",
+    imageUrl: "/gutierrez.jpg",
+    href: "/comprar?bairro=gutierrez",
   },
   {
     name: "Lourdes",
@@ -41,22 +48,22 @@ const bairrosDestaque = [
     href: "/comprar?bairro=Lourdes",
   },
   {
-    name: "Serra",
+    name: "Luxemburgo",
     city: "Belo Horizonte",
-    imageUrl: "/serra.jpg",
-    href: "/comprar?bairro=serra",
+    imageUrl: "/luxemburgo.jpeg",
+    href: "/comprar?bairro=luxemburgo",
   },
   {
-    name: "Sion",
+    name: "Mangabeiras",
     city: "Belo Horizonte",
-    imageUrl: "/sion.png",
-    href: "/comprar?bairro=sion",
+    imageUrl: "/mangabeiras.jpeg",
+    href: "/comprar?bairro=mangabeiras",
   },
   {
-    name: "Anchieta",
+    name: "Santo Agostinho",
     city: "Belo Horizonte",
-    imageUrl: "/anchieta.png",
-    href: "/comprar?bairro=anchieta",
+    imageUrl: "/santoAgostinho.jpeg",
+    href: "/comprar?bairro=santoAgostinho",
   },
   {
     name: "Santo Antonio",
@@ -71,42 +78,36 @@ const bairrosDestaque = [
     href: "/comprar?bairro=SaoPedro",
   },
   {
-    name: "Luxemburgo",
-    city: "Belo Horizonte",
-    imageUrl: "/luxemburgo.jpeg",
-    href: "/comprar?bairro=luxemburgo",
-  },
-  {
-    name: "Gutierrez",
-    city: "Belo Horizonte",
-    imageUrl: "/gutierrez.jpg",
-    href: "/comprar?bairro=gutierrez",
-  },
-  {
-    name: "Funcionarios",
-    city: "Belo Horizonte",
-    imageUrl: "/funcionarios.jpg",
-    href: "/comprar?bairro=funcionarios",
-  },
-  {
-    name: "Santo Agostinho",
-    city: "Belo Horizonte",
-    imageUrl: "/santoAntonio.jpg",
-    href: "/comprar?bairro=santoAgostinho",
-  },
-  {
     name: "Savassi",
     city: "Belo Horizonte",
     imageUrl: "/savassi.jpg",
     href: "/comprar?bairro=savassi",
   },
   {
-    name: "Condominios Nova Lima",
+    name: "Serra",
     city: "Belo Horizonte",
+    imageUrl: "/serra.jpg",
+    href: "/comprar?bairro=serra",
+  },
+  {
+    name: "Sion",
+    city: "Belo Horizonte",
+    imageUrl: "/sion.png",
+    href: "/comprar?bairro=sion",
+  },
+  // --- Nova Lima ---
+  {
+    name: "Vila da Serra",
+    city: "Nova Lima",
+    imageUrl: "/viladaserra.jpg",
+    href: "/comprar?bairro=vila-da-serra",
+  },
+  {
+    name: "Condominios Nova Lima",
+    city: "Nova Lima",
     imageUrl: "/casa.jpg",
     href: "/comprar?bairro=condominio",
   },
-  // Adicione os outros bairros se desejar
 ];
 
 export default function HomePage() {

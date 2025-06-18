@@ -21,7 +21,7 @@ export default function AreaClientePage() {
         <div className="text-center">
           <h1 className="text-2xl font-bold text-gray-800">Acesse sua Conta</h1>
           <p className="mt-2 text-sm text-gray-600">
-            Bem-vindo de volta! Faça login para continuar.
+            Bem-vindo! Faça login para continuar.
           </p>
         </div>
 
