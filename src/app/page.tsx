@@ -37,7 +37,7 @@ const bairrosDestaque = [
   {
     name: "Lourdes",
     city: "Belo Horizonte",
-    imageUrl: "/Lourdes.png",
+    imageUrl: "/lourdes.png",
     href: "/comprar?bairro=Lourdes",
   },
   {
@@ -67,7 +67,7 @@ const bairrosDestaque = [
   {
     name: "São Pedro",
     city: "Belo Horizonte",
-    imageUrl: "/SaoPedro.jpg",
+    imageUrl: "/Saopedro.jpg",
     href: "/comprar?bairro=SaoPedro",
   },
   {
