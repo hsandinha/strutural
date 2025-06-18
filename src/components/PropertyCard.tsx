@@ -1,9 +1,10 @@
 // src/components/PropertyCard.tsx
 
+import { useState } from "react";
 import { Imovel } from "@/types";
 import Image from "next/image";
 import Link from "next/link";
-import { Bed, Bath, Scan } from "lucide-react";
+import { Bed, Bath, Scan, Heart } from "lucide-react";
 
 // Definimos as propriedades que o nosso componente vai receber
 interface PropertyCardProps {
@@ -19,6 +20,20 @@ const formatPrice = (price: number) => {
 };
 
 export function PropertyCard({ imovel }: PropertyCardProps) {
+  // Estado para controlar se o card está favoritado
+  const [isFavorited, setIsFavorited] = useState(false);
+
+  const handleFavoriteClick = (e: React.MouseEvent<HTMLButtonElement>) => {
+    // Previne que o clique no coração também ative o link do card
+    e.preventDefault();
+    e.stopPropagation();
+
+    setIsFavorited(!isFavorited);
+    // No futuro, aqui chamaremos a função para salvar no Firebase
+    console.log(
+      `Imóvel ${imovel.id} foi ${!isFavorited ? "favoritado" : "desfavoritado"}`
+    );
+  };
   return (
     // O card inteiro é um link para a página de detalhes do imóvel
     <Link href={`/imoveis/${imovel.id}`} className="block h-full">
@@ -32,6 +47,20 @@ export function PropertyCard({ imovel }: PropertyCardProps) {
             style={{ objectFit: "cover" }} // Garante que a imagem cubra o espaço sem distorcer
             className="transition-transform duration-500 group-hover:scale-110"
           />
+
+          {/* Botão de Favoritar */}
+          <button
+            onClick={handleFavoriteClick}
+            className="absolute top-3 right-3 bg-white/80 backdrop-blur-sm p-2 rounded-full z-10 hover:bg-white transition-colors"
+            aria-label="Favoritar imóvel"
+          >
+            <Heart
+              size={20}
+              className={`transition-all ${
+                isFavorited ? "text-red-500 fill-red-500" : "text-gray-700"
+              }`}
+            />
+          </button>
         </div>
 
         {/* Conteúdo do Card */}
