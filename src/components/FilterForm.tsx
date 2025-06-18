@@ -177,7 +177,7 @@ export function FilterForm({ filters, setFilters }: FilterFormProps) {
       </div>
 
       {/* Quartos, Banheiros, Suítes, Vagas */}
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+      <div className="grid grid-cols-2 gap-x-4 gap-y-6">
         <ButtonGroupField
           label="Quartos"
           name="quartos"
