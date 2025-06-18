@@ -42,7 +42,7 @@ export const mockImoveis: Imovel[] = [
   {
     id: "3",
     titulo: "Cobertura Duplex para Alugar",
-    finalidade: "Alugar", // <-- Adicionado
+    finalidade: "Comprar", // <-- Adicionado
     tipo: "Apartamento",
     descricao:
       "Vista deslumbrante da cidade, com piscina privativa e área de lazer completa.",
@@ -60,7 +60,7 @@ export const mockImoveis: Imovel[] = [
   {
     id: "4",
     titulo: "Loja Comercial no Centro",
-    finalidade: "Alugar", // <-- Adicionado
+    finalidade: "Comprar", // <-- Adicionado
     tipo: "Loja",
     descricao:
       "Ponto comercial excelente com grande fluxo de pessoas, ideal para seu negócio.",
@@ -96,7 +96,7 @@ export const mockImoveis: Imovel[] = [
   {
     id: "6",
     titulo: "Apartamento para Alugar no Castelo",
-    finalidade: "Alugar", // <-- Adicionado
+    finalidade: "Comprar", // <-- Adicionado
     tipo: "Apartamento",
     descricao:
       "Apartamento aconchegante, recém-reformado, próximo a comércios e parques.",
@@ -114,8 +114,8 @@ export const mockImoveis: Imovel[] = [
   {
     id: "7",
     titulo: "Cobertura Duplex para Alugar",
-    finalidade: "Alugar", // <-- Adicionado
-    tipo: "Apartamento",
+    finalidade: "Comprar", // <-- Adicionado
+    tipo: "Cobertura",
     descricao:
       "Vista deslumbrante da cidade, com piscina privativa e área de lazer completa.",
     preco: 12000, // Preço de aluguel
@@ -132,7 +132,7 @@ export const mockImoveis: Imovel[] = [
   {
     id: "8",
     titulo: "Cobertura Duplex para Alugar",
-    finalidade: "Alugar", // <-- Adicionado
+    finalidade: "Comprar", // <-- Adicionado
     tipo: "Apartamento",
     descricao:
       "Vista deslumbrante da cidade, com piscina privativa e área de lazer completa.",

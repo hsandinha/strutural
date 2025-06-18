@@ -25,12 +25,10 @@ export default function RootLayout({
   return (
     <html lang="pt-BR">
       <body className={inter.className}>
-        <FilterProvider>
-          <Header />
-          <main className="flex-grow">{children}</main>
-          <Footer />
-          <FloatingWhatsAppButton />
-        </FilterProvider>
+        <Header />
+        <main className="flex-grow">{children}</main>
+        <Footer />
+        <FloatingWhatsAppButton />
       </body>
     </html>
   );

@@ -17,7 +17,6 @@ export function FeaturedSection({
   const filteredProperties = initialProperties.filter((imovel) => {
     if (activeFilter === "Lançamentos") return imovel.emDestaque === true;
     if (activeFilter === "Comprar") return imovel.finalidade === "Comprar";
-    if (activeFilter === "Alugar") return imovel.finalidade === "Alugar";
     return true;
   });
 

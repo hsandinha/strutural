@@ -16,10 +16,18 @@ export interface Imovel {
 }
 
 export type SearchFilters = {
-  finalidade: string;
-  tipo: string;
+  codigo: string;
+  finalidade: "Comprar";
   localizacao: string;
+  tipo: string[]; // <-- MUDADO DE VOLTA PARA 'tipo'
   quartos: string;
+  banheiros: string;
+  suites: string;
+  vagas: string;
   valorMin: string;
   valorMax: string;
+  areaMin: string;
+  areaMax: string;
+  caracteristicasImovel: string[];
+  caracteristicasEdificio: string[];
 };

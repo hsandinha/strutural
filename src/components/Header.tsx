@@ -36,7 +36,11 @@ export function Header() {
         {/* Menu Desktop */}
         <div className="hidden lg:flex flex-col items-end">
           <nav className="flex items-center space-x-6 text-xs text-gray-500 mb-2">
-            <NavItemWithDropdown title="COMPRAR" subItems={propertyTypes} />
+            <NavItemWithDropdown
+              title="COMPRAR"
+              basePath="/comprar"
+              subItems={propertyTypes}
+            />
             <Link
               href="/cadastrar-imovel"
               className="text-gray-600 hover:text-black font-medium border-b-2 border-transparent hover:border-blue-600 pb-1 transition-all duration-300 cursor-pointer"
@@ -104,22 +108,6 @@ export function Header() {
                 <Link
                   key={type.value}
                   href={`/comprar?tipo=${type.value}`}
-                  className="block text-gray-500 text-xs hover:text-blue-600 cursor-pointer"
-                  onClick={() => setIsMenuOpen(false)}
-                >
-                  {type.name}
-                </Link>
-              ))}
-            </div>
-          </div>
-
-          <div className="border-b pb-2">
-            <span className="text-gray-600 font-medium text-sm">ALUGAR</span>
-            <div className="ml-4 mt-2 space-y-2">
-              {propertyTypes.map((type) => (
-                <Link
-                  key={type.value}
-                  href={`/alugar?tipo=${type.value}`}
                   className="block text-gray-500 text-xs hover:text-blue-600 cursor-pointer"
                   onClick={() => setIsMenuOpen(false)}
                 >
