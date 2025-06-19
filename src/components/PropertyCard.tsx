@@ -51,11 +51,11 @@ export function PropertyCard({ imovel }: PropertyCardProps) {
           {/* Botão de Favoritar */}
           <button
             onClick={handleFavoriteClick}
-            className="absolute top-3 right-3 bg-white/80 backdrop-blur-sm p-2 rounded-full z-10 hover:bg-white transition-colors"
+            className="absolute top-3 right-3 cursor-pointer"
             aria-label="Favoritar imóvel"
           >
             <Heart
-              size={20}
+              size={15}
               className={`transition-all ${
                 isFavorited ? "text-red-500 fill-red-500" : "text-gray-700"
               }`}
