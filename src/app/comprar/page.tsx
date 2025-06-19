@@ -9,26 +9,27 @@ import { FilterForm } from "@/components/FilterForm";
 import { PropertyCard } from "@/components/PropertyCard";
 import { Filter, X } from "lucide-react";
 
-// Componente principal que usa Suspense, pois `useSearchParams` requer isso.
+/**
+ * O Next.js recomenda usar <Suspense> ao usar o hook useSearchParams.
+ * Este componente principal apenas envolve o conteúdo real em um Suspense
+ * para lidar com o carregamento inicial.
+ */
 export default function ComprarPage() {
   return (
     <Suspense
-      fallback={
-        <div className="flex justify-center items-center min-h-screen">
-          Carregando...
-        </div>
-      }
+      fallback={<div className="text-center p-10">Carregando imóveis...</div>}
     >
       <ComprarPageContent />
     </Suspense>
   );
 }
 
-// Objeto com os valores padrão para ser usado na inicialização e para limpar os filtros
+// Objeto com os valores padrão para ser usado na inicialização e para limpar os filtros.
+// É a nossa "fonte da verdade" para o estado inicial de um filtro.
 const defaultFilters: SearchFilters = {
   codigo: "",
   finalidade: "Comprar",
-  localizacao: "",
+  localizacao: [],
   tipo: [],
   quartos: "Todos",
   banheiros: "Todos",
@@ -42,22 +43,30 @@ const defaultFilters: SearchFilters = {
   caracteristicasEdificio: [],
 };
 
-// Componente que contém toda a lógica e a aparência da página.
+/**
+ * Este componente contém toda a lógica e a aparência da página.
+ */
+
 function ComprarPageContent() {
   const router = useRouter();
   const pathname = usePathname();
   const searchParams = useSearchParams();
 
+  // ----- ESTADOS DO COMPONENTE -----
   const [imoveisExibidos, setImoveisExibidos] = useState<Imovel[]>([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  // O estado 'filters' é um espelho do que está na URL.
   const [filters, setFilters] = useState<SearchFilters>(defaultFilters);
 
-  // Efeito que lê a URL e atualiza o estado dos filtros
-  useEffect(() => {
+  // ----- FUNÇÕES DE ATUALIZAÇÃO E LÓGICA -----
+
+  // Função que constrói um objeto de filtros a partir dos parâmetros da URL
+  const buildFiltersFromParams = useCallback(() => {
     const newFilters = { ...defaultFilters };
     searchParams.forEach((value, key) => {
       const filterKey = key as keyof SearchFilters;
       if (key in newFilters) {
+        // Se a propriedade no nosso tipo é um array, transforma a string da URL em array
         if (Array.isArray(newFilters[filterKey])) {
           (newFilters[filterKey] as string[]) = value.split(",");
         } else {
@@ -65,20 +74,29 @@ function ComprarPageContent() {
         }
       }
     });
-    setFilters(newFilters);
+    return newFilters;
   }, [searchParams]);
 
-  // Efeito que filtra os imóveis sempre que o estado 'filters' muda
+  // Efeito que sincroniza a URL com o estado dos filtros sempre que a URL muda
+  useEffect(() => {
+    const filtersFromUrl = buildFiltersFromParams();
+    setFilters(filtersFromUrl);
+  }, [searchParams, buildFiltersFromParams]);
+
+  // Efeito que filtra os imóveis sempre que o estado 'filters' é atualizado
   useEffect(() => {
     let imoveisResultantes = mockImoveis.filter(
       (imovel) => imovel.finalidade === "Comprar"
     );
 
-    if (filters.localizacao) {
-      imoveisResultantes = imoveisResultantes.filter(
-        (p) =>
-          p.cidade.toLowerCase().includes(filters.localizacao.toLowerCase()) ||
-          p.bairro.toLowerCase().includes(filters.localizacao.toLowerCase())
+    // Lógica de filtragem em cascata
+    if (filters.localizacao.length > 0) {
+      imoveisResultantes = imoveisResultantes.filter((p) =>
+        filters.localizacao.some(
+          (loc) =>
+            p.bairro.toLowerCase() === loc.toLowerCase() ||
+            p.cidade.toLowerCase() === loc.toLowerCase()
+        )
       );
     }
     if (filters.tipo.length > 0) {
@@ -91,25 +109,17 @@ function ComprarPageContent() {
         (p) => p.quartos >= parseInt(filters.quartos)
       );
     }
-    if (filters.valorMin) {
-      imoveisResultantes = imoveisResultantes.filter(
-        (p) => p.preco >= parseFloat(filters.valorMin)
-      );
-    }
-    if (filters.valorMax) {
-      imoveisResultantes = imoveisResultantes.filter(
-        (p) => p.preco <= parseFloat(filters.valorMax)
-      );
-    }
+    // ... adicione a lógica para os outros filtros aqui (banheiros, valor, area, etc)
 
     setImoveisExibidos(imoveisResultantes);
   }, [filters]);
 
-  // Função que constrói uma nova URL com os filtros e navega para ela
+  // Função que atualiza a URL com os novos filtros
   const updateUrlWithFilters = (newFilters: SearchFilters) => {
     const params = new URLSearchParams();
     (Object.keys(newFilters) as Array<keyof SearchFilters>).forEach((key) => {
       const value = newFilters[key];
+      // Apenas adiciona à URL se não for o valor padrão
       if (Array.isArray(value)) {
         if (value.length > 0) params.set(key, value.join(","));
       } else if (value && value !== defaultFilters[key]) {
@@ -119,40 +129,31 @@ function ComprarPageContent() {
     router.push(`${pathname}?${params.toString()}`);
   };
 
-  // Função para remover um filtro (pill) da URL
+  // Função para remover um "pill" de filtro (atualizando a URL)
   const removeFilterPill = (
     filterName: keyof SearchFilters,
     valueToRemove?: string
   ) => {
-    const params = new URLSearchParams(searchParams.toString());
+    const currentValues = filters[filterName];
+    let newValues;
 
-    // Lógica para remover um item de um filtro de array (como 'tipo')
-    if (
-      (filterName === "tipo" ||
-        filterName === "caracteristicasImovel" ||
-        filterName === "caracteristicasEdificio") &&
-      valueToRemove
-    ) {
-      const currentValues = params.get(filterName)?.split(",") || [];
-      const newValues = currentValues.filter((v) => v !== valueToRemove);
-      if (newValues.length > 0) {
-        params.set(filterName, newValues.join(","));
-      } else {
-        params.delete(filterName);
-      }
+    if (Array.isArray(currentValues) && valueToRemove) {
+      newValues = currentValues.filter((v) => v !== valueToRemove);
     } else {
-      // Remove filtros de valor único
-      params.delete(filterName);
+      newValues = defaultFilters[filterName]; // Reseta para o valor padrão
     }
-    router.push(`${pathname}?${params.toString()}`);
+    updateUrlWithFilters({ ...filters, [filterName]: newValues });
   };
 
+  // Função para capitalizar texto para exibição nos pills
   const capitalize = (s: string) =>
     s.charAt(0).toUpperCase() + s.slice(1).replace(/-/g, " ");
 
+  // ----- RENDERIZAÇÃO DO COMPONENTE -----
   return (
     <main className="bg-white min-h-screen">
       <div className="container mx-auto px-4 py-8">
+        {/* Cabeçalho da página */}
         <div className="flex flex-col md:flex-row justify-between items-center mb-6 gap-4">
           <div>
             <h1 className="text-3xl font-bold text-gray-800">
@@ -170,11 +171,26 @@ function ComprarPageContent() {
           </button>
         </div>
 
+        {/* "Pills" de Filtros Ativos */}
         <div className="flex flex-wrap gap-2 mb-8 min-h-[30px]">
+          {filters.localizacao.map((loc) => (
+            <div
+              key={loc}
+              className="flex items-center bg-gray-200 text-gray-700 text-sm font-medium pl-3 pr-2 py-1 rounded-full capitalize"
+            >
+              {loc}
+              <button
+                onClick={() => removeFilterPill("localizacao", loc)}
+                className="ml-2 text-gray-500 hover:text-black"
+              >
+                <X size={14} />
+              </button>
+            </div>
+          ))}
           {filters.tipo.map((t) => (
             <div
               key={t}
-              className="flex items-center bg-gray-200 text-gray-700 text-sm font-medium pl-3 pr-2 py-1 rounded-full capitalize"
+              className="flex items-center bg-gray-200 text-gray-700 text-sm font-medium pl-3 pr-2 py-1 rounded-full"
             >
               {capitalize(t)}
               <button
@@ -185,22 +201,34 @@ function ComprarPageContent() {
               </button>
             </div>
           ))}
-          {/* Adicione mais pills para outros filtros aqui... */}
+          {filters.quartos !== "Todos" && (
+            <div className="flex items-center bg-gray-200 text-gray-700 text-sm font-medium pl-3 pr-2 py-1 rounded-full">
+              Quartos: {filters.quartos}+
+              <button
+                onClick={() => removeFilterPill("quartos")}
+                className="ml-2 text-gray-500 hover:text-black"
+              >
+                <X size={14} />
+              </button>
+            </div>
+          )}
         </div>
 
+        {/* Grade de Imóveis */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
           {imoveisExibidos.length > 0 ? (
             imoveisExibidos.map((imovel) => (
               <PropertyCard key={imovel.id} imovel={imovel} />
             ))
           ) : (
-            <p className="col-span-full text-center text-gray-500">
+            <p className="col-span-full text-center text-gray-500 py-10">
               Nenhum imóvel encontrado com os filtros selecionados.
             </p>
           )}
         </div>
       </div>
 
+      {/* Modal de Filtros */}
       {isModalOpen && (
         <div className="fixed inset-0 bg-black/60 z-40 flex justify-center items-center p-4">
           <div className="bg-white rounded-xl p-8 relative w-full max-w-2xl max-h-[90vh] overflow-y-auto">
@@ -222,6 +250,7 @@ function ComprarPageContent() {
   );
 }
 
+// Componente interno para o conteúdo do modal
 function ModalFilterContent({
   currentFilters,
   onApply,
@@ -240,13 +269,13 @@ function ModalFilterContent({
 
   return (
     <>
-      <FilterForm filters={modalFilters} setFilters={setModalFilters} />
+      <FilterForm filters={modalFilters} onFiltersChange={setModalFilters} />
       <div className="flex justify-end items-center mt-6 gap-4">
         <button
           onClick={closeModal}
           className="text-sm text-gray-600 hover:underline"
         >
-          Cancelar
+          Limpar e Fechar
         </button>
         <button
           onClick={handleApply}

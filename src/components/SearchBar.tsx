@@ -11,12 +11,20 @@ export function SearchBar({
 }) {
   // 2. Usamos o tipo no nosso estado para garantir consistência
   const [filters, setFilters] = useState<SearchFilters>({
+    codigo: "",
     finalidade: "Comprar",
-    tipo: "Todos",
-    localizacao: "",
+    localizacao: [],
+    tipo: [],
     quartos: "Todos",
+    banheiros: "Todos",
+    suites: "Todos",
+    vagas: "Todos",
     valorMin: "",
     valorMax: "",
+    areaMin: "",
+    areaMax: "",
+    caracteristicasImovel: [],
+    caracteristicasEdificio: [],
   });
 
   const handleInputChange = (

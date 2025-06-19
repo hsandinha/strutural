@@ -1,12 +1,17 @@
 // src/components/FilterForm.tsx
 "use client";
 
-import type { SearchFilters } from "@/types";
-import { Search } from "lucide-react";
+import type { SearchFilters, Imovel } from "@/types";
+import { AutocompleteSearch } from "./AutocompleteSearch";
+import { useState } from "react";
+import { mockImoveis } from "@/lib/mockData";
+import Link from "next/link";
+import Image from "next/image";
+import { Search, X } from "lucide-react";
 
 interface FilterFormProps {
   filters: SearchFilters;
-  setFilters: (filters: SearchFilters) => void;
+  onFiltersChange: (newFilters: SearchFilters) => void;
 }
 
 // Pequeno componente auxiliar para os botões (Quartos, Banheiros, etc)
@@ -36,16 +41,20 @@ const ButtonGroupField = ({ label, name, value, options, onChange }: any) => (
 );
 
 // Componente principal do formulário
-export function FilterForm({ filters, setFilters }: FilterFormProps) {
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setFilters({ ...filters, [e.target.name]: e.target.value });
+export function FilterForm({ filters, onFiltersChange }: FilterFormProps) {
+  const [foundProperty, setFoundProperty] = useState<Imovel | null>(null);
+
+  const handleInputChange = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
+  ) => {
+    onFiltersChange({ ...filters, [e.target.name]: e.target.value });
   };
 
   const handleButtonGroupChange = (
     name: keyof SearchFilters,
     value: string
   ) => {
-    setFilters({
+    onFiltersChange({
       ...filters,
       [name]: filters[name as keyof typeof filters] === value ? "Todos" : value,
     });
@@ -59,9 +68,30 @@ export function FilterForm({ filters, setFilters }: FilterFormProps) {
     const newValues = currentValues.includes(value)
       ? currentValues.filter((item) => item !== value)
       : [...currentValues, value];
-    setFilters({ ...filters, [group]: newValues });
+    onFiltersChange({ ...filters, [group]: newValues });
   };
 
+  const addLocationFilter = (location: string) => {
+    const lowerCaseLocation = location.toLowerCase();
+    if (!filters.localizacao.includes(lowerCaseLocation)) {
+      const newLocations = [...filters.localizacao, lowerCaseLocation];
+      onFiltersChange({ ...filters, localizacao: newLocations });
+    }
+  };
+
+  const removeLocationFilter = (locationToRemove: string) => {
+    const newLocations = filters.localizacao.filter(
+      (loc) => loc !== locationToRemove
+    );
+    onFiltersChange({ ...filters, localizacao: newLocations });
+  };
+
+  const handleCodeSearch = (e: React.MouseEvent<HTMLButtonElement>) => {
+    e.preventDefault();
+    if (!filters.codigo) return;
+    const result = mockImoveis.find((p) => p.id === filters.codigo);
+    setFoundProperty(result || null);
+  };
   const tiposDeImovel = [
     { name: "Andar Corrido", value: "andar-corrido" },
     { name: "Apartamento", value: "apartamento" },
@@ -78,7 +108,7 @@ export function FilterForm({ filters, setFilters }: FilterFormProps) {
     { name: "Lote / Terreno", value: "terreno" },
     { name: "Prédio Comercial", value: "predio-comercial" },
     { name: "Salas", value: "sala" },
-    { name: "Vaga de Garagem", value: "geragem" },
+    { name: "Vaga de Garagem", value: "garagem" },
     // Adicione os outros tipos aqui seguindo o mesmo padrão
   ];
   const caracteristicasImovel = [
@@ -112,40 +142,87 @@ export function FilterForm({ filters, setFilters }: FilterFormProps) {
         Busca Detalhada
       </h1>
 
-      {/* Código e Bairro/Cidade */}
+      {/* Código e Bairro/Cidade - ESTRUTURA CORRIGIDA */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-        <div className="relative">
-          <input
-            type="text"
-            name="codigo"
-            value={filters.codigo}
-            onChange={handleInputChange}
-            placeholder="Digite o código do imóvel"
-            className="w-full border-gray-300 rounded-md p-3 pl-10"
-          />
-          <Search
-            className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"
-            size={20}
-          />
-          <div className="relative">
-            {/* Garanta que o 'name' e o 'value' aqui são 'localizacao' */}
+        {/* Campo de Código com o resultado da busca */}
+        <div>
+          <div className="flex items-center gap-0 w-full border border-gray-300 rounded-md bg-white h-12">
             <input
               type="text"
-              name="localizacao"
-              value={filters.localizacao}
+              name="codigo"
+              value={filters.codigo}
               onChange={handleInputChange}
-              placeholder="Digite aqui o Bairro ou Cidade"
-              className="w-full border-gray-300 rounded-md p-3 pl-10"
+              placeholder="Digite o código do imóvel"
+              className="w-full h-full px-3 bg-transparent focus:outline-none text-gray-700 placeholder-gray-400"
             />
-            <Search
-              className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"
-              size={20}
-            />
+            {/* 3. A LUPA AGORA É UM BOTÃO CLICÁVEL */}
+            <button
+              onClick={handleCodeSearch}
+              className="px-3 h-full text-gray-400 hover:text-blue-600"
+            >
+              <Search size={20} />
+            </button>
           </div>
-          <Search
-            className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"
-            size={20}
-          />
+
+          {/* 4. RESULTADO DA BUSCA (renderização condicional) */}
+          {foundProperty && (
+            <Link href={`/imoveis/${foundProperty.id}`} className="block mt-2">
+              <div className="border rounded-md p-2 flex items-center gap-3 hover:bg-gray-50">
+                <div className="relative w-20 h-16 rounded overflow-hidden">
+                  <Image
+                    src={foundProperty.fotos[0]}
+                    alt={foundProperty.titulo}
+                    fill
+                    style={{ objectFit: "cover" }}
+                  />
+                </div>
+                <div>
+                  <p className="font-semibold text-sm text-gray-800">
+                    {foundProperty.tipo} | {foundProperty.bairro}
+                  </p>
+                  <p className="text-sm text-blue-600 font-bold">
+                    {new Intl.NumberFormat("pt-BR", {
+                      style: "currency",
+                      currency: "BRL",
+                    }).format(foundProperty.preco)}
+                  </p>
+                </div>
+              </div>
+            </Link>
+          )}
+        </div>
+      </div>
+
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        {/* Campo de Localização */}
+        <div>
+          <label
+            htmlFor="localizacao"
+            className="block text-sm font-semibold text-gray-700 mb-2"
+          >
+            Localização
+          </label>
+          <AutocompleteSearch onSelect={addLocationFilter} />
+
+          {filters.localizacao.length > 0 && (
+            <div className="flex flex-wrap gap-2 mt-2">
+              {filters.localizacao.map((loc) => (
+                <div
+                  key={loc}
+                  className="flex items-center bg-gray-200 text-gray-800 text-xs font-medium pl-3 pr-2 py-1 rounded-full"
+                >
+                  <span className="capitalize">{loc}</span>
+                  <button
+                    type="button"
+                    onClick={() => removeLocationFilter(loc)}
+                    className="ml-2 text-gray-500 hover:text-black"
+                  >
+                    <X size={14} />
+                  </button>
+                </div>
+              ))}
+            </div>
+          )}
         </div>
       </div>
 

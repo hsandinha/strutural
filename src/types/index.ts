@@ -2,7 +2,23 @@
 export interface Imovel {
   id: string;
   titulo: string;
-  tipo: string;
+  tipo?:
+    | "apartamento"
+    | "casa"
+    | "cobertura"
+    | "terreno"
+    | "loja"
+    | "casa-condominio"
+    | "apto-area-privativa"
+    | "andar-corrido"
+    | "casa-comercial"
+    | "estacionamento"
+    | "fazendas-sitios"
+    | "flat-hotel-apart"
+    | "galpao"
+    | "predio-comercial"
+    | "sala"
+    | "vaga-de-garagem";
   finalidade: string;
   descricao: string;
   preco: number;
@@ -18,7 +34,7 @@ export interface Imovel {
 export type SearchFilters = {
   codigo: string;
   finalidade: "Comprar";
-  localizacao: string;
+  localizacao: string[];
   tipo: string[]; // <-- MUDADO DE VOLTA PARA 'tipo'
   quartos: string;
   banheiros: string;
