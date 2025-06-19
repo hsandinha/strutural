@@ -60,7 +60,7 @@ export function Header() {
               SOBRE
             </Link>
             <Link
-              href="/area-cliente"
+              href="/login"
               className="text-gray-600 hover:text-black font-medium border-b-2 border-transparent hover:border-blue-600 pb-1 transition-all duration-300 cursor-pointer"
             >
               ÁREA DO CLIENTE

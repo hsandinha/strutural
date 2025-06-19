@@ -93,8 +93,8 @@ function ComprarPageContent() {
       imoveisResultantes = imoveisResultantes.filter((p) =>
         filters.localizacao.some(
           (loc) =>
-            p.bairro.toLowerCase() === loc.toLowerCase() ||
-            p.cidade.toLowerCase() === loc.toLowerCase()
+            p.endereco?.bairro?.toLowerCase() === loc.toLowerCase() ||
+            p.endereco?.cidade?.toLowerCase() === loc.toLowerCase()
         )
       );
     }

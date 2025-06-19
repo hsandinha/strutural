@@ -13,10 +13,7 @@ export default function FavoritosPage() {
     <main className="bg-gray-50 min-h-screen py-12">
       <div className="container mx-auto px-4">
         <div className="mb-10">
-          <Link
-            href="/area-cliente/dashboard"
-            className="text-blue-600 hover:underline"
-          >
+          <Link href="/minha-conta" className="text-blue-600 hover:underline">
             &larr; Voltar para o Painel
           </Link>
           <h1 className="text-4xl font-bold text-gray-800 mt-2">

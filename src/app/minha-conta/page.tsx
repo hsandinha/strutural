@@ -1,4 +1,4 @@
-// src/app/area-cliente/dashboard/page.tsx
+// src/app/minha-conta/page.tsx
 import { Heart, User, LogOut } from "lucide-react";
 import Link from "next/link";
 
@@ -14,7 +14,7 @@ export default function DashboardPage() {
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mt-10">
           {/* Card de Favoritos */}
           <Link
-            href="/area-cliente/favoritos"
+            href="/minha-conta/favoritos"
             className="block p-6 bg-white rounded-lg shadow-md hover:shadow-xl transition-shadow border border-gray-200"
           >
             <Heart className="w-10 h-10 text-red-500 mb-4" />
