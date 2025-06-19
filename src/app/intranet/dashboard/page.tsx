@@ -8,8 +8,7 @@ import {
   CalendarPlus,
   PlusCircle,
   Bell,
-  Calendar,
-  Calendar1,
+  LogOut,
 } from "lucide-react";
 import Link from "next/link";
 import { mockLembretes } from "@/lib/mockLembretes";
@@ -54,6 +53,13 @@ export default function IntranetDashboardPage() {
           </h1>
           <p className="text-gray-600 mt-1">Bem-vindo, Hebert!</p>
         </div>
+        <button
+          // onClick={signOutUser}
+          className="flex items-center gap-2 bg-red-500 text-white font-semibold py-2 px-4 rounded-lg hover:bg-red-600 transition-colors"
+        >
+          <LogOut size={16} />
+          Sair
+        </button>
 
         {/* Seção de Estatísticas */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mt-8">
