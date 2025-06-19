@@ -42,12 +42,19 @@ const ButtonGroupField = ({ label, name, value, options, onChange }: any) => (
 
 // Componente principal do formulário
 export function FilterForm({ filters, onFiltersChange }: FilterFormProps) {
+  const [codeQuery, setCodeQuery] = useState("");
+  const [codeSearchAttempted, setCodeSearchAttempted] = useState(false);
   const [foundProperty, setFoundProperty] = useState<Imovel | null>(null);
 
   const handleInputChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
   ) => {
-    onFiltersChange({ ...filters, [e.target.name]: e.target.value });
+    const { name, value } = e.target;
+    onFiltersChange({ ...filters, [name]: value });
+    if (name === "codigo" && value === "") {
+      setFoundProperty(null);
+      setCodeSearchAttempted(false);
+    }
   };
 
   const handleButtonGroupChange = (
@@ -59,7 +66,6 @@ export function FilterForm({ filters, onFiltersChange }: FilterFormProps) {
       [name]: filters[name as keyof typeof filters] === value ? "Todos" : value,
     });
   };
-
   const handleCheckboxChange = (
     group: "tipo" | "caracteristicasImovel" | "caracteristicasEdificio",
     value: string
@@ -88,10 +94,12 @@ export function FilterForm({ filters, onFiltersChange }: FilterFormProps) {
 
   const handleCodeSearch = (e: React.MouseEvent<HTMLButtonElement>) => {
     e.preventDefault();
-    if (!filters.codigo) return;
-    const result = mockImoveis.find((p) => p.id === filters.codigo);
+    setCodeSearchAttempted(true);
+    if (!codeQuery) return;
+    const result = mockImoveis.find((p) => p.id === codeQuery);
     setFoundProperty(result || null);
   };
+
   const tiposDeImovel = [
     { name: "Andar Corrido", value: "andar-corrido" },
     { name: "Apartamento", value: "apartamento" },
@@ -143,15 +151,18 @@ export function FilterForm({ filters, onFiltersChange }: FilterFormProps) {
       </h1>
 
       {/* Código e Bairro/Cidade - ESTRUTURA CORRIGIDA */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+      <div className="grid grid-cols-1 ">
         {/* Campo de Código com o resultado da busca */}
         <div>
           <div className="flex items-center gap-0 w-full border border-gray-300 rounded-md bg-white h-12">
             <input
               type="text"
-              name="codigo"
-              value={filters.codigo}
-              onChange={handleInputChange}
+              // 3. O input agora usa o estado local 'codeQuery'
+              value={codeQuery}
+              onChange={(e) => {
+                setCodeQuery(e.target.value);
+                if (e.target.value === "") setFoundProperty(null);
+              }}
               placeholder="Digite o código do imóvel"
               className="w-full h-full px-3 bg-transparent focus:outline-none text-gray-700 placeholder-gray-400"
             />
@@ -190,10 +201,17 @@ export function FilterForm({ filters, onFiltersChange }: FilterFormProps) {
               </div>
             </Link>
           )}
+
+          {/* 3. NOVA MENSAGEM DE ERRO (renderização condicional) */}
+          {codeSearchAttempted && !foundProperty && (
+            <div className="mt-2 px-3 py-2 text-sm text-red-700 bg-red-100 border border-red-200 rounded-md">
+              Imóvel não encontrado.
+            </div>
+          )}
         </div>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+      <div className="grid grid-cols-1">
         {/* Campo de Localização */}
         <div>
           <label

@@ -32,7 +32,6 @@ export interface Imovel {
 }
 
 export type SearchFilters = {
-  codigo: string;
   finalidade: "Comprar";
   localizacao: string[];
   tipo: string[]; // <-- MUDADO DE VOLTA PARA 'tipo'

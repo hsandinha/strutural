@@ -27,7 +27,6 @@ export default function ComprarPage() {
 // Objeto com os valores padrão para ser usado na inicialização e para limpar os filtros.
 // É a nossa "fonte da verdade" para o estado inicial de um filtro.
 const defaultFilters: SearchFilters = {
-  codigo: "",
   finalidade: "Comprar",
   localizacao: [],
   tipo: [],
