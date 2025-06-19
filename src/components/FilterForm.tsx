@@ -143,6 +143,8 @@ export function FilterForm({ filters, onFiltersChange }: FilterFormProps) {
     "Sauna",
     "Portão Eletrônico",
   ];
+  const inputClass =
+    "w-full border-gray-300 rounded-md p-2 shadow-sm focus:ring-blue-500 focus:border-blue-500";
 
   return (
     <form className="space-y-6">
@@ -154,6 +156,12 @@ export function FilterForm({ filters, onFiltersChange }: FilterFormProps) {
       <div className="grid grid-cols-1 ">
         {/* Campo de Código com o resultado da busca */}
         <div>
+          <label
+            htmlFor="codigo"
+            className="block text-sm font-semibold text-gray-700 mb-2"
+          >
+            Código
+          </label>
           <div className="flex items-center gap-0 w-full border border-gray-300 rounded-md bg-white h-12">
             <input
               type="text"
@@ -309,14 +317,14 @@ export function FilterForm({ filters, onFiltersChange }: FilterFormProps) {
           <label className="block text-sm font-semibold text-gray-700 mb-2">
             Valor
           </label>
-          <div className="flex items-center gap-2">
+          <div className="flex items-center ">
             <input
               type="number"
               name="valorMin"
               value={filters.valorMin}
               onChange={handleInputChange}
               placeholder="Mínimo"
-              className="w-full border-gray-300 rounded-md p-2"
+              className="w-full h-12 gap-0 px-3 bg-transparent focus:outline-none border border-gray-300 rounded-md text-gray-700 placeholder-gray-400"
             />
             <span>-</span>
             <input
@@ -325,7 +333,7 @@ export function FilterForm({ filters, onFiltersChange }: FilterFormProps) {
               value={filters.valorMax}
               onChange={handleInputChange}
               placeholder="Máximo"
-              className="w-full border-gray-300 rounded-md p-2"
+              className="w-full h-12 gap-0 px-3 bg-transparent focus:outline-none border border-gray-300 rounded-md text-gray-700 placeholder-gray-400"
             />
           </div>
         </div>
@@ -340,7 +348,7 @@ export function FilterForm({ filters, onFiltersChange }: FilterFormProps) {
               value={filters.areaMin}
               onChange={handleInputChange}
               placeholder="Mínima"
-              className="w-full border-gray-300 rounded-md p-2"
+              className="w-full h-12 gap-0 px-3 bg-transparent focus:outline-none border border-gray-300 rounded-md text-gray-700 placeholder-gray-400"
             />
             <span>-</span>
             <input
@@ -349,7 +357,7 @@ export function FilterForm({ filters, onFiltersChange }: FilterFormProps) {
               value={filters.areaMax}
               onChange={handleInputChange}
               placeholder="Máxima"
-              className="w-full border-gray-300 rounded-md p-2"
+              className="w-full h-12 gap-0 px-3 bg-transparent focus:outline-none border border-gray-300 rounded-md text-gray-700 placeholder-gray-400"
             />
           </div>
         </div>

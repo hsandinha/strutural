@@ -20,6 +20,7 @@ export const mockImoveis: Imovel[] = [
     fotos: [
       "https://images.unsplash.com/photo-1560448204-e02f11c3d0e2?q=80&w=2070",
     ],
+    dataCadastro: "2025-06-18",
   },
   {
     id: "2",
@@ -38,6 +39,7 @@ export const mockImoveis: Imovel[] = [
     fotos: [
       "https://images.unsplash.com/photo-1580587771525-78b9dba3b914?q=80&w=1974",
     ],
+    dataCadastro: "2025-06-15",
   },
   {
     id: "3",
@@ -56,6 +58,7 @@ export const mockImoveis: Imovel[] = [
     fotos: [
       "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?q=80&w=2070",
     ],
+    dataCadastro: "2025-06-10",
   },
   {
     id: "4",
@@ -74,6 +77,7 @@ export const mockImoveis: Imovel[] = [
     fotos: [
       "https://images.unsplash.com/photo-1556742502-ec7c0e9f34b1?q=80&w=1974",
     ],
+    dataCadastro: "2025-06-09",
   },
   {
     id: "5",
@@ -92,6 +96,7 @@ export const mockImoveis: Imovel[] = [
     fotos: [
       "https://images.unsplash.com/photo-1530906358829-e84b276907de?q=80&w=2070",
     ],
+    dataCadastro: "2025-06-01",
   },
   {
     id: "6",
@@ -110,6 +115,7 @@ export const mockImoveis: Imovel[] = [
     fotos: [
       "https://images.unsplash.com/photo-1522708323590-d24dbb6b0267?q=80&w=2070",
     ],
+    dataCadastro: "2025-06-08",
   },
   {
     id: "7",
@@ -128,6 +134,7 @@ export const mockImoveis: Imovel[] = [
     fotos: [
       "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?q=80&w=2070",
     ],
+    dataCadastro: "2025-06-07",
   },
   {
     id: "8",
@@ -146,5 +153,6 @@ export const mockImoveis: Imovel[] = [
     fotos: [
       "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?q=80&w=2070",
     ],
+    dataCadastro: "2025-06-19",
   },
 ];

@@ -7,7 +7,7 @@ import { mockImoveis } from "@/lib/mockData";
 import { Imovel, SearchFilters } from "@/types";
 import { FilterForm } from "@/components/FilterForm";
 import { PropertyCard } from "@/components/PropertyCard";
-import { Filter, X } from "lucide-react";
+import { Filter, Plus, PlusIcon, X } from "lucide-react";
 
 /**
  * O Next.js recomenda usar <Suspense> ao usar o hook useSearchParams.
@@ -108,10 +108,37 @@ function ComprarPageContent() {
         (p) => p.quartos >= parseInt(filters.quartos)
       );
     }
-    // ... adicione a lógica para os outros filtros aqui (banheiros, valor, area, etc)
+
+    const sortOrder = searchParams.get("sort") || "relevancia"; // Pega a ordem da URL
+
+    if (sortOrder === "preco_asc") {
+      imoveisResultantes.sort((a, b) => a.preco - b.preco);
+    } else if (sortOrder === "preco_desc") {
+      imoveisResultantes.sort((a, b) => b.preco - a.preco);
+    } else if (sortOrder === "data_desc") {
+      // Ordena por data, do mais novo para o mais antigo
+      imoveisResultantes.sort(
+        (a, b) =>
+          new Date(b.dataCadastro).getTime() -
+          new Date(a.dataCadastro).getTime()
+      );
+    }
 
     setImoveisExibidos(imoveisResultantes);
-  }, [filters]);
+  }, [searchParams]);
+  // ... adicione a lógica para os outros filtros aqui (banheiros, valor, area, etc)
+
+  const handleSortChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    const newSortOrder = e.target.value;
+    const params = new URLSearchParams(searchParams.toString());
+
+    if (newSortOrder === "relevancia") {
+      params.delete("sort");
+    } else {
+      params.set("sort", newSortOrder);
+    }
+    router.push(`${pathname}?${params.toString()}`);
+  };
 
   // Função que atualiza a URL com os novos filtros
   const updateUrlWithFilters = (newFilters: SearchFilters) => {
@@ -154,6 +181,7 @@ function ComprarPageContent() {
       <div className="container mx-auto px-4 py-8">
         {/* Cabeçalho da página */}
         <div className="flex flex-col md:flex-row justify-between items-center mb-6 gap-4">
+          {/* Lado Esquerdo: Título */}
           <div>
             <h1 className="text-3xl font-bold text-gray-800">
               Imóveis à Venda
@@ -162,12 +190,33 @@ function ComprarPageContent() {
               {imoveisExibidos.length} imóveis encontrados
             </p>
           </div>
-          <button
-            onClick={() => setIsModalOpen(true)}
-            className="flex items-center gap-2 bg-blue-600 text-white font-semibold py-2 px-5 rounded-lg hover:bg-blue-700 transition-colors self-start md:self-center"
-          >
-            <Filter size={18} /> Mais Filtros
-          </button>
+
+          {/* Lado Direito: Controles de Ordenação e Filtro */}
+          <div className="flex items-center gap-4 w-full sm:w-auto">
+            <div>
+              <label htmlFor="sort" className="sr-only">
+                Ordenar por:
+              </label>
+              <select
+                id="sort"
+                onChange={handleSortChange}
+                className="block w-full pl-3 pr-10 py-2 text-black border-gray-300 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm rounded-md shadow-sm bg-white"
+              >
+                <option value="relevancia">Mais Relevantes</option>
+                <option value="data_desc">Mais Recentes</option>
+                <option value="preco_asc">Menor Preço</option>
+                <option value="preco_desc">Maior Preço</option>
+              </select>
+            </div>
+
+            <button
+              onClick={() => setIsModalOpen(true)}
+              className="flex items-center gap-2 border-gray-300 text-black font-semibold py-2 px-5  cursor-pointer hover:bg-blue-500 transition-colors whitespace-nowrap text-sm rounded-md shadow-sm"
+            >
+              <PlusIcon size={18} />
+              <span>Mais Filtros</span>
+            </button>
+          </div>
         </div>
 
         {/* "Pills" de Filtros Ativos */}

@@ -29,6 +29,7 @@ export interface Imovel {
   bairro: string;
   emDestaque: boolean;
   fotos: string[];
+  dataCadastro: string;
 }
 
 export type SearchFilters = {
