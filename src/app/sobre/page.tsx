@@ -130,7 +130,7 @@ export default function SobrePage() {
             {/* Exemplo de Membro da Equipe - Copie e cole este bloco para cada membro */}
             <div className="text-center">
               <Image
-                src="/Adhimar.png" // Substitua pela foto do corretor
+                src="/adhimar.png" // Substitua pela foto do corretor
                 alt="Foto do Corretor 1"
                 width={150}
                 height={150}
