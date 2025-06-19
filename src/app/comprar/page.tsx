@@ -125,7 +125,7 @@ function ComprarPageContent() {
     }
 
     setImoveisExibidos(imoveisResultantes);
-  }, [searchParams]);
+  }, [filters]);
   // ... adicione a lógica para os outros filtros aqui (banheiros, valor, area, etc)
 
   const handleSortChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
