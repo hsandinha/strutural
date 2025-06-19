@@ -197,7 +197,7 @@ export function FilterForm({ filters, onFiltersChange }: FilterFormProps) {
                 </div>
                 <div>
                   <p className="font-semibold text-sm text-gray-800">
-                    {foundProperty.tipo} | {foundProperty.bairro}
+                    {foundProperty.tipo} | {foundProperty.endereco.bairro}
                   </p>
                   <p className="text-sm text-blue-600 font-bold">
                     {new Intl.NumberFormat("pt-BR", {

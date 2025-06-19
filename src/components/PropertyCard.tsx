@@ -69,7 +69,7 @@ export function PropertyCard({ imovel }: PropertyCardProps) {
             {imovel.titulo}
           </h3>
           <p className="text-sm text-gray-600 mt-1">
-            {imovel.bairro}, {imovel.cidade}
+            {imovel.endereco.bairro}, {imovel.endereco.cidade}
           </p>
           <p className="text-2xl font-extrabold text-blue-600 my-4">
             {formatPrice(imovel.preco)}

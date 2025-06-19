@@ -46,7 +46,7 @@ export default function PropertyDetailsPage({
           <div className="flex items-center gap-2 text-gray-600 mt-2">
             <MapPin size={20} />
             <span>
-              {imovel.bairro}, {imovel.cidade}
+              {imovel.endereco.bairro}, {imovel.endereco.cidade}
             </span>
           </div>
         </div>

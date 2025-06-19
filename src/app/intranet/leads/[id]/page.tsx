@@ -72,7 +72,7 @@ export default function LeadDetailsPage() {
       <div className="mb-8">
         <Link
           href="/intranet/leads"
-          className="flex items-center gap-2 text-gray-500 hover:text-gray-800"
+          className="flex items-center gap-2 text-gray-500 hover:text-gray-800 mb-2"
         >
           <ArrowLeftCircle size={20} /> Voltar para a Lista de Leads
         </Link>
@@ -162,9 +162,12 @@ export default function LeadDetailsPage() {
               >
                 <BellPlus size={18} /> Adicionar Lembrete
               </button>
-              <button className="flex items-center gap-2 text-left p-2 rounded-md text-black hover:bg-gray-100">
+              <Link
+                href={`/intranet/leads/editar/${lead.id}`}
+                className="flex items-center gap-2 text-left text-black p-2 rounded-md hover:bg-gray-100"
+              >
                 <Edit size={18} /> Editar Dados do Lead
-              </button>
+              </Link>
             </div>
           </div>
         </div>

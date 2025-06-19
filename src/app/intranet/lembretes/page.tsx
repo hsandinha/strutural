@@ -12,6 +12,7 @@ import {
   CheckCircle2,
   Search,
   Clock,
+  FilePenLine,
 } from "lucide-react";
 
 export default function GerenciarLembretesPage() {
@@ -56,9 +57,13 @@ export default function GerenciarLembretesPage() {
             Gerenciar Lembretes
           </h1>
         </div>
-        <button className="inline-flex items-center gap-2 bg-blue-600 text-white font-semibold py-2 px-4 rounded-lg hover:bg-blue-700 transition-colors">
+
+        <Link
+          href="/intranet/lembretes/novo"
+          className="inline-flex items-center gap-2 bg-blue-600 text-white font-semibold py-2 px-4 rounded-lg hover:bg-blue-700 transition-colors"
+        >
           <PlusCircle size={20} /> Adicionar Lembrete
-        </button>
+        </Link>
       </div>
 
       <div className="flex border-b mb-6">
@@ -125,6 +130,13 @@ export default function GerenciarLembretesPage() {
                 </p>
               </div>
               <div className="flex items-center gap-3">
+                <Link
+                  href={`/intranet/lembretes/editar/${lembrete.id}`}
+                  className="p-2 text-gray-400 hover:text-blue-600"
+                  title="Editar Lembrete"
+                >
+                  <FilePenLine size={20} />
+                </Link>
                 <button
                   onClick={() => toggleConcluido(lembrete.id)}
                   className={`p-2 rounded-full ${

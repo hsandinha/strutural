@@ -11,9 +11,11 @@ interface AutocompleteSearchProps {
 }
 
 // Geramos as listas de locais fora do componente para melhor performance
-const allCities = [...new Set(mockImoveis.map((p) => p.cidade))];
+const allCities = [...new Set(mockImoveis.map((p) => p.endereco.cidade))];
 const allNeighborhoods = [
-  ...new Set(mockImoveis.map((p) => `${p.bairro}, ${p.cidade}`)),
+  ...new Set(
+    mockImoveis.map((p) => `${p.endereco.bairro}, ${p.endereco.cidade}`)
+  ),
 ];
 
 export function AutocompleteSearch({ onSelect }: AutocompleteSearchProps) {

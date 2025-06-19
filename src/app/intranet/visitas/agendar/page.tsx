@@ -4,93 +4,73 @@
 import { useState, useEffect, Suspense } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
+import { mockImoveis } from "@/lib/mockData";
 import { ArrowLeftCircle } from "lucide-react";
 import { Visita } from "@/types";
-import { mockImoveis } from "@/lib/mockData";
-import { mockCorretores } from "@/lib/mockCorretores";
+import { VisitForm } from "@/components/intranet/VisitForm"; // Importe o novo formulário
 
-// Componente Wrapper com Suspense, necessário para usar useSearchParams
 function AgendarVisitaPageContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
-
-  // --- ESTADOS DO COMPONENTE ---
-  // Guarda os dados da nova visita que está sendo criada no formulário.
   const [novaVisita, setNovaVisita] = useState<Partial<Visita>>({
-    status: "Agendada", // Valor padrão para uma nova visita
-    imovelId: "",
-    corretorResponsavel: "",
+    status: "Agendada",
   });
   const [isLoading, setIsLoading] = useState(false);
-  const returnTo = searchParams.get("returnTo") || "/intranet/dashboard";
-  // --- LÓGICA DO COMPONENTE ---
-
-  // Este 'useEffect' roda quando a página carrega.
-  // Ele verifica se a URL tem parâmetros para pré-preencher o formulário.
+  const returnTo = searchParams.get("returnTo") || "/intranet/visitas";
   useEffect(() => {
+    // Lê todos os parâmetros relevantes da URL
     const nomeCliente = searchParams.get("nomeCliente");
     const telefoneCliente = searchParams.get("telefoneCliente");
     const imovelId = searchParams.get("imovelId");
 
-    // Cria um objeto com os valores da URL para preencher o estado
+    // Cria um objeto apenas com os dados que vieram da URL
     const initialStateFromUrl: Partial<Visita> = {};
     if (nomeCliente) initialStateFromUrl.nomeCliente = nomeCliente;
     if (telefoneCliente) initialStateFromUrl.telefoneCliente = telefoneCliente;
     if (imovelId) initialStateFromUrl.imovelId = imovelId;
 
-    // Atualiza o estado com os dados pré-preenchidos
+    // Atualiza o estado da visita com os dados pré-preenchidos
+    // Usamos uma função no set para garantir que pegamos o estado anterior corretamente
     if (Object.keys(initialStateFromUrl).length > 0) {
       setNovaVisita((prev) => ({ ...prev, ...initialStateFromUrl }));
     }
   }, [searchParams]);
 
-  // Função genérica para atualizar o estado quando qualquer campo do formulário muda.
-  const handleChange = (
-    e: React.ChangeEvent<
-      HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement
-    >
-  ) => {
-    setNovaVisita({
-      ...novaVisita,
-      [e.target.name]: e.target.value,
-    });
-  };
-
-  // Função para quando o formulário é enviado.
   const handleSubmit = (e: React.FormEvent) => {
+    // 1. Previne o comportamento padrão do formulário, que é recarregar a página.
     e.preventDefault();
+
+    // 2. Ativa o estado de carregamento para dar feedback ao usuário (ex: desabilitar o botão).
     setIsLoading(true);
 
-    // Adiciona informações que não estão no formulário, mas são necessárias
+    // 3. Adiciona informações que não estão no formulário, mas são necessárias para o objeto 'Visita'.
     const imovelSelecionado = mockImoveis.find(
       (i) => i.id === novaVisita.imovelId
     );
-    const dadosCompletos = {
+
+    const dadosCompletosParaSalvar = {
       ...novaVisita,
-      id: `vis-${new Date().getTime()}`, // Gera um ID de exemplo
-      dataCriacao: new Date().toISOString(),
+      id: `vis-${new Date().getTime()}`, // Gera um ID de exemplo, já que não temos um banco real.
       imovelTitulo: imovelSelecionado?.titulo || "Título não encontrado",
       imovelFoto: imovelSelecionado?.fotos[0] || "/imovel-placeholder.png",
     };
 
-    console.log("Agendando nova visita:", dadosCompletos);
+    // 4. Exibe os dados finais no console do navegador para você poder depurar e ver se está tudo certo.
+    console.log(
+      "Agendando nova visita (dados completos):",
+      dadosCompletosParaSalvar
+    );
 
-    // SIMULAÇÃO DE UMA CHAMADA DE API PARA SALVAR
+    // --- SIMULAÇÃO DE UMA CHAMADA DE API PARA SALVAR NO BANCO DE DADOS ---
+    // Em um app real, aqui você faria um `fetch` para sua API que salvaria no Firebase.
+    // O setTimeout simula o tempo que a internet levaria para responder.
     setTimeout(() => {
-      alert(
-        "Visita agendada com sucesso! (Simulação)\nVerifique o console para ver os dados."
-      );
+      alert("Visita agendada com sucesso! (Isto é uma simulação)");
       setIsLoading(false);
-      // Redireciona de volta para a lista de visitas após agendar
-      router.push("/intranet/visitas");
+      router.push(returnTo);
     }, 1500);
   };
 
-  // Classe de estilo reutilizável para os campos do formulário
-  const inputClass =
-    "w-full bg-white border border-gray-300 rounded-md h-12 px-4 text-gray-700 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 transition";
-
-  // --- RENDERIZAÇÃO DO JSX ---
   return (
     <div className="container mx-auto px-4 py-12">
       <div className="mb-8">
@@ -108,148 +88,19 @@ function AgendarVisitaPageContent() {
         Agendar Nova Visita
       </h1>
 
-      <form
+      {/* Usamos nosso novo componente de formulário reutilizável */}
+      <VisitForm
+        visita={novaVisita}
+        setVisita={setNovaVisita}
         onSubmit={handleSubmit}
-        className="max-w-2xl mx-auto bg-white p-8 rounded-lg shadow-md border space-y-6"
-      >
-        <fieldset>
-          <legend className="text-lg font-semibold text-gray-700 mb-4">
-            Dados da Visita
-          </legend>
-          <div className="space-y-4">
-            <div>
-              <label
-                htmlFor="imovelId"
-                className="block text-sm font-medium text-gray-600 mb-1"
-              >
-                Imóvel*
-              </label>
-              <select
-                id="imovelId"
-                name="imovelId"
-                value={novaVisita.imovelId || ""}
-                onChange={handleChange}
-                className={inputClass}
-                required
-              >
-                <option value="" disabled>
-                  Selecione o imóvel
-                </option>
-                {mockImoveis.map((imovel) => (
-                  <option key={imovel.id} value={imovel.id}>
-                    Cód: {imovel.id} - {imovel.titulo}
-                  </option>
-                ))}
-              </select>
-            </div>
-            <div>
-              <label
-                htmlFor="data"
-                className="block text-sm font-medium text-gray-600 mb-1"
-              >
-                Data e Hora da Visita*
-              </label>
-              <input
-                type="datetime-local"
-                id="data"
-                name="data"
-                value={novaVisita.data || ""}
-                onChange={handleChange}
-                className={inputClass}
-                required
-              />
-            </div>
-          </div>
-        </fieldset>
-
-        <fieldset>
-          <legend className="text-lg font-semibold text-gray-700 mb-4">
-            Dados do Cliente
-          </legend>
-          <div className="space-y-4">
-            <div>
-              <label
-                htmlFor="nomeCliente"
-                className="block text-sm font-medium text-gray-600 mb-1"
-              >
-                Nome do Cliente*
-              </label>
-              <input
-                type="text"
-                id="nomeCliente"
-                name="nomeCliente"
-                value={novaVisita.nomeCliente || ""}
-                onChange={handleChange}
-                required
-                className={inputClass}
-              />
-            </div>
-            <div>
-              <label
-                htmlFor="telefoneCliente"
-                className="block text-sm font-medium text-gray-600 mb-1"
-              >
-                Telefone do Cliente*
-              </label>
-              <input
-                type="tel"
-                id="telefoneCliente"
-                name="telefoneCliente"
-                value={novaVisita.telefoneCliente || ""}
-                onChange={handleChange}
-                required
-                className={inputClass}
-              />
-            </div>
-          </div>
-        </fieldset>
-
-        <fieldset>
-          <legend className="text-lg font-semibold text-gray-700 mb-4">
-            Responsável
-          </legend>
-          <div>
-            <label
-              htmlFor="corretorResponsavel"
-              className="block text-sm font-medium text-gray-600 mb-1"
-            >
-              Corretor*
-            </label>
-            <select
-              id="corretorResponsavel"
-              name="corretorResponsavel"
-              value={novaVisita.corretorResponsavel || ""}
-              onChange={handleChange}
-              className={inputClass}
-              required
-            >
-              <option value="" disabled>
-                Selecione um corretor
-              </option>
-              {mockCorretores.map((corretor) => (
-                <option key={corretor.id} value={corretor.nome}>
-                  {corretor.nome}
-                </option>
-              ))}
-            </select>
-          </div>
-        </fieldset>
-
-        <div className="pt-4 border-t">
-          <button
-            type="submit"
-            disabled={isLoading}
-            className="w-full bg-blue-600 text-white font-bold py-3 rounded-lg shadow-lg hover:bg-blue-700 transition-colors disabled:bg-gray-400"
-          >
-            {isLoading ? "Agendando..." : "Confirmar Agendamento"}
-          </button>
-        </div>
-      </form>
+        isLoading={isLoading}
+        buttonText="Confirmar Agendamento"
+      />
     </div>
   );
 }
 
-export default function AgendarVisitaPageWrapper() {
+export default function AgendarVisitaPage() {
   return (
     <Suspense>
       <AgendarVisitaPageContent />
