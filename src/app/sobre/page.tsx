@@ -33,27 +33,47 @@ export default function SobrePage() {
         <div className="container mx-auto px-4">
           <div className="grid md:grid-cols-2 gap-12 items-center">
             <div className="prose lg:prose-lg max-w-none text-gray-600">
-              <h2 className="text-3xl font-bold text-gray-800">
+              <h2 className="text-3xl font-bold text-gray-800 ">
                 Nossa História
               </h2>
               <p>
-                Fundada em [Ano de Fundação] com a paixão por transformar o
-                mercado imobiliário de Belo Horizonte, a Strutural Imóveis
-                nasceu do desejo de oferecer uma consultoria que vai além da
-                simples transação. Entendemos que a busca por um imóvel é um dos
-                momentos mais importantes na vida de uma pessoa.
+                <br></br>
+                Com 25 anos de mercado, Adhimar e Simone unem experiência,
+                confiança e sensibilidade para oferecer um atendimento
+                personalizado, humano e eficiente. Cada cliente é tratado com o
+                cuidado de quem entende que um imóvel é palco de sonhos,
+                conquistas e novos começos. Seu imóvel nas mãos de quem entende
+                e trabalha em perfeita sintonia.<br></br> Trabalhar com um casal
+                de consultores imobiliários é ter:
               </p>
-              <p>
-                Ao longo dos anos, construímos uma reputação sólida baseada na
-                transparência, no conhecimento profundo do mercado local e em um
-                atendimento que prioriza as necessidades e os sonhos de cada
-                cliente. Nossa trajetória é marcada por milhares de sorrisos e
-                chaves entregues.
+              <p className="whitespace-pre-line indent-8">
+                {" "}
+                • Visões complementares: enquanto um observa os detalhes
+                técnicos, o outro foca nas necessidades emocionais e práticas da
+                família.
+              </p>
+              <p className="whitespace-pre-line indent-8">
+                {" "}
+                • Agilidade no atendimento: dois profissionais em perfeita
+                harmonia para otimizar visitas, negociações e estratégias.
+              </p>
+              <p className="whitespace-pre-line indent-8">
+                {" "}
+                • Empatia em dobro: quem vive juntos, entende juntos. E isso
+                reflete na forma como se relacionam com cada cliente.
+              </p>
+              <p className="whitespace-pre-line indent-8">
+                {" "}
+                • Comprometimento a longo prazo: dedicação real, ética e
+                transparência em cada etapa. Mais do que consultores, eles são
+                parceiros. Uma dupla que caminha com você em um dos momentos
+                mais importantes da sua vida: a escolha de um novo lar ou
+                investimento.
               </p>
             </div>
             <div>
               <Image
-                src="https://images.unsplash.com/photo-1556761175-5973dc0f32e7?q=80&w=1932"
+                src="/escritorio.jpeg"
                 alt="Equipe da imobiliária em reunião"
                 width={600}
                 height={400}
@@ -110,7 +130,7 @@ export default function SobrePage() {
             {/* Exemplo de Membro da Equipe - Copie e cole este bloco para cada membro */}
             <div className="text-center">
               <Image
-                src="https://images.unsplash.com/photo-1557862921-37829c790f19?q=80&w=2071" // Substitua pela foto do corretor
+                src="/Adhimar.png" // Substitua pela foto do corretor
                 alt="Foto do Corretor 1"
                 width={150}
                 height={150}
@@ -118,13 +138,25 @@ export default function SobrePage() {
                 style={{ objectFit: "cover" }}
               />
               <h4 className="text-xl font-semibold text-gray-800">
-                Hebert Corretor
+                Adhimar Chagas
               </h4>
               <p className="text-gray-500">Corretor Especialista</p>
             </div>
             {/* Fim do Exemplo */}
-
-            {/* Adicione mais membros aqui */}
+            <div className="text-center">
+              <Image
+                src="/simone.png" // Substitua pela foto do corretor
+                alt="Foto do Corretor 1"
+                width={146}
+                height={150}
+                className="rounded-full mx-auto mb-4 shadow-md"
+                style={{ objectFit: "cover" }}
+              />
+              <h4 className="text-xl font-semibold text-gray-800">
+                Simone Campos
+              </h4>
+              <p className="text-gray-500">Corretora Especialista</p>
+            </div>
           </div>
         </div>
       </section>
