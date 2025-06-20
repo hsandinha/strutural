@@ -225,9 +225,10 @@ export default function PropertyDetailsPage() {
             </div>
 
             {/* Coluna Lateral (Direita) com o novo Card de Ação */}
-            <div className="row-start-1 lg:row-auto py-3">
-              <div className="bg-white p-6 rounded-lg shadow-lg border sticky top-24">
-                {/* Cabeçalho do Card */}
+            <div className="py-3 order-last lg:order-none">
+              <div className="bg-white p-6 rounded-lg shadow-lg border sticky lg:top-24">
+                {/* Conteúdo do Card */}
+                {/* Seções de Cabeçalho, Valores, Corretor, Botões de Ação */}
                 <div className="flex justify-between items-center pb-4 border-b">
                   <span className="text-sm font-semibold text-gray-500">
                     IMÓVEL
@@ -239,7 +240,6 @@ export default function PropertyDetailsPage() {
 
                 <hr className="my-0 h-px border-0 bg-gray-200" />
 
-                {/* Seção de Valores */}
                 <div className="py-4 border-b">
                   <div className="flex justify-between items-baseline mb-2">
                     <span className="text-gray-600">VALOR</span>
@@ -257,7 +257,6 @@ export default function PropertyDetailsPage() {
                   </div>
                 </div>
                 <hr className="my-0 h-px border-0 bg-gray-200" />
-                {/* Seção do Corretor */}
                 <div className="py-4 flex items-center gap-4">
                   <Image
                     src="/Adhimar.png" // Foto de exemplo
@@ -272,7 +271,6 @@ export default function PropertyDetailsPage() {
                   </div>
                 </div>
 
-                {/* Botões de Ação */}
                 <div className="pt-4 space-y-3">
                   <button
                     onClick={() => setIsContactModalOpen(true)}

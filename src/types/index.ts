@@ -37,6 +37,7 @@ export interface Imovel {
 
   caracteristicasEdificio: {
     piscina?: boolean;
+    piscinaDeRaia?: boolean;
     quadraDeTenis?: boolean;
     academia?: boolean;
     areaDeLazer?: boolean;
@@ -49,7 +50,7 @@ export interface Imovel {
     precisaDeAutorizacao?: boolean;
     mercadinho?: boolean;
     lavanderia?: boolean;
-    piscinaDeRaia?: boolean;
+
     // O campo que causava o erro, agora definido corretamente
     tipoPortaria: "Nenhuma" | "24h" | "Virtual" | "Diurna" | "Noturna";
   };
