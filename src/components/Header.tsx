@@ -139,7 +139,7 @@ export function Header() {
             SOBRE
           </Link>
           <Link
-            href="/area-cliente"
+            href="/login"
             className="text-gray-600 hover:text-blue-600 font-medium text-sm cursor-pointer"
             onClick={() => setIsMenuOpen(false)}
           >

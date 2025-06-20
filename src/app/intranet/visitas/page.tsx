@@ -137,7 +137,7 @@ export default function VisitasPage() {
           value={searchQuery}
           onChange={(e) => setSearchQuery(e.target.value)}
           placeholder={`Buscar em visitas ${statusFiltro.toLowerCase()}s...`}
-          className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg shadow-sm"
+          className="w-full pl-10 pr-4 py-2 border text-black border-gray-300 rounded-lg shadow-sm"
         />
       </div>
 

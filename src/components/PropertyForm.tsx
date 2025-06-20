@@ -302,6 +302,7 @@ export function PropertyForm({
             <label className="text-sm font-medium">Quartos</label>
             <input
               type="number"
+              placeholder="Quartos"
               name="quartos"
               value={property.quartos || ""}
               onChange={handleChange}
@@ -312,6 +313,7 @@ export function PropertyForm({
             <label className="text-sm font-medium">Suítes</label>
             <input
               type="number"
+              placeholder="Suítes"
               name="suites"
               value={property.suites || ""}
               onChange={handleChange}
@@ -323,6 +325,7 @@ export function PropertyForm({
             <input
               type="number"
               name="banheiros"
+              placeholder="Banheiros"
               value={property.banheiros || ""}
               onChange={handleChange}
               className={inputClass}
@@ -333,6 +336,7 @@ export function PropertyForm({
             <input
               type="number"
               name="vagas"
+              placeholder="Vagas"
               value={property.vagas || ""}
               onChange={handleChange}
               className={inputClass}
@@ -343,6 +347,7 @@ export function PropertyForm({
             <input
               type="number"
               name="area"
+              placeholder="Área"
               value={property.area || ""}
               onChange={handleChange}
               className={inputClass}
@@ -353,6 +358,7 @@ export function PropertyForm({
             <input
               type="number"
               name="preco"
+              placeholder="Valor do imovel"
               value={property.preco || ""}
               onChange={handleChange}
               className={inputClass}
@@ -363,6 +369,7 @@ export function PropertyForm({
             <input
               type="number"
               name="valorCondominio"
+              placeholder="Valor do Condomínio"
               value={property.valorCondominio || ""}
               onChange={handleChange}
               className={inputClass}
@@ -373,6 +380,7 @@ export function PropertyForm({
             <input
               type="number"
               name="valorIptu"
+              placeholder="IPTU"
               value={property.valorIptu || ""}
               onChange={handleChange}
               className={inputClass}
