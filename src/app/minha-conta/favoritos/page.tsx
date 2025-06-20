@@ -4,7 +4,7 @@
 import { mockImoveis } from "@/lib/mockData";
 import { PropertyCard } from "@/components/PropertyCard";
 import Link from "next/link";
-
+import { ArrowLeftCircle } from "lucide-react";
 export default function FavoritosPage() {
   // Por enquanto, vamos simular que os 3 primeiros imóveis são os favoritos
   const favoriteProperties = mockImoveis.slice(0, 3);
@@ -13,8 +13,11 @@ export default function FavoritosPage() {
     <main className="bg-gray-50 min-h-screen py-12">
       <div className="container mx-auto px-4">
         <div className="mb-10">
-          <Link href="/minha-conta" className="text-blue-600 hover:underline">
-            &larr; Voltar para o Painel
+          <Link
+            href="/minha-conta"
+            className="flex items-center gap-2 text-gray-500 hover:text-gray-800 mb-2"
+          >
+            <ArrowLeftCircle size={24} /> Voltar para o Painel
           </Link>
           <h1 className="text-4xl font-bold text-gray-800 mt-2">
             Meus Imóveis Favoritos

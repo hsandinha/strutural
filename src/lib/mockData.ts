@@ -1,252 +1,212 @@
 // src/lib/mockData.ts
 import { Imovel } from "@/types";
 
+// Função auxiliar para gerar fotos para um imóvel
+const generatePhotos = (imovelIndex: number, count: number = 10): string[] => {
+  const photos: string[] = [];
+  const basePhotoId = 200 + imovelIndex * 10;
+  for (let i = 0; i < count; i++) {
+    photos.push(`https://picsum.photos/id/${basePhotoId + i}/1024/768`);
+  }
+  return photos;
+};
+
 export const mockImoveis: Imovel[] = [
+  // Lançamentos
   {
-    id: "1",
-    titulo: "Apartamento Moderno na Savassi",
-    finalidade: "Comprar",
-    tipo: "apartamento",
+    id: "49578",
+    titulo: "Lançamento de Luxo no Belvedere",
     descricao:
-      "Um apartamento incrível com vista panorâmica e acabamento de primeira linha. Ampla sala para dois ambientes, varanda gourmet e cozinha planejada.",
-    preco: 1250000,
-    valorCondominio: 850,
-    valorIptu: 2500,
-    quartos: 3,
-    suites: 1,
-    banheiros: 3,
-    vagas: 2,
-    area: 120,
-    endereco: {
-      rua: "Rua dos Inconfidentes",
-      numero: "911",
-      complemento: "Apto 301",
-      bairro: "Savassi",
-      cidade: "Belo Horizonte",
-      estado: "MG",
-      cep: "30140-120",
-    },
-    caracteristicasImovel: {
-      aceitaPermuta: false,
-      churrasqueira: true,
-      closet: true,
-      dce: false,
-      lavabo: true,
-      mobiliado: true,
-      naPlanta: false,
-      alugado: false,
-    },
-    caracteristicasEdificio: {
-      areaDeLazer: true,
-      piscina: true,
-      piscinaDeRaia: false,
-      mercadinho: false,
-      lavanderia: true,
-      quadraDeTenis: false,
-      quadraDeAreia: false,
-      quadraEsportiva: true,
-      academia: true,
-      playground: true,
-      salaoDeJogos: true,
-      sauna: true,
-      portaoEletronico: true,
-      precisaDeAutorizacao: true,
-      tipoPortaria: "24h",
-    },
-
-    proprietario: {
-      nome: "Ana Cliente Silva",
-      contato: "5531999991111",
-      horarioContato: "Após as 18h",
-    },
-    emDestaque: true,
-    status: "Ativo",
-    dataCadastro: "2025-06-18",
-    fotos: ["/imoveis/imovel-1.jpg"],
-  },
-  {
-    id: "2",
-    titulo: "Casa Espaçosa com Quintal no Buritis",
-    finalidade: "Comprar",
-    tipo: "casa-residencial",
-    descricao:
-      "Perfeita para famílias que buscam conforto e espaço verde, com área gourmet completa e piscina aquecida.",
-    preco: 2500000,
-    valorCondominio: 0,
-    valorIptu: 4000,
-    quartos: 4,
-    suites: 2,
-    banheiros: 4,
-    vagas: 4,
-    area: 350,
-    endereco: {
-      rua: "Rua das Flores",
-      numero: "100",
-      bairro: "Buritis",
-      cidade: "Belo Horizonte",
-      estado: "MG",
-      cep: "30494-170",
-    },
-    caracteristicasImovel: {
-      aceitaPermuta: true,
-      churrasqueira: true,
-      closet: false,
-      dce: true,
-      lavabo: true,
-      mobiliado: false,
-      naPlanta: false,
-      alugado: false,
-    },
-    caracteristicasEdificio: {
-      areaDeLazer: true,
-      piscina: true,
-      piscinaDeRaia: false,
-      mercadinho: false,
-      lavanderia: false,
-      quadraDeTenis: false,
-      quadraDeAreia: false,
-      quadraEsportiva: false,
-      academia: false,
-      playground: false,
-      salaoDeJogos: false,
-      sauna: false,
-      portaoEletronico: true,
-      precisaDeAutorizacao: false,
-      tipoPortaria: "Nenhuma",
-    },
-
-    proprietario: {
-      nome: "Bruno Rocha",
-      contato: "5531999992222",
-      horarioContato: "Manhã",
-    },
-    emDestaque: true,
-    status: "Ativo",
-    dataCadastro: "2025-06-15",
-    fotos: ["/imoveis/imovel-2.jpg"],
-  },
-  {
-    id: "3",
-    titulo: "Cobertura Duplex para Alugar no Lourdes",
-    finalidade: "Alugar",
-    tipo: "cobertura",
-    descricao:
-      "Vista deslumbrante da cidade, com piscina privativa e área de lazer completa no prédio.",
-    preco: 12000,
-    valorCondominio: 2500,
-    valorIptu: 6000,
+      "Um empreendimento exclusivo com design arrojado e infraestrutura completa. Unidades de 3 e 4 suítes com vista definitiva.",
+    preco: 2800000,
+    valorCondominio: 1500,
+    valorIptu: 7000,
     quartos: 4,
     suites: 4,
     banheiros: 5,
     vagas: 4,
-    area: 350,
+    area: 210,
+    finalidade: "Comprar", // CORRETO
+    tipo: "apartamento",
+    emDestaque: true,
+    status: "Ativo",
+    dataCadastro: "2025-06-19",
     endereco: {
-      rua: "Rua da Bahia",
-      numero: "2000",
-      complemento: "Cob 01",
-      bairro: "Lourdes",
+      rua: "Av. Celso Guedes",
+      numero: "100",
+      bairro: "Belvedere",
       cidade: "Belo Horizonte",
       estado: "MG",
-      cep: "30160-010",
+      cep: "30320-570",
     },
     caracteristicasImovel: {
       aceitaPermuta: false,
       churrasqueira: true,
       closet: true,
-      dce: true,
-      lavabo: true,
-      mobiliado: true,
-      naPlanta: false,
-      alugado: false,
+      naPlanta: true,
     },
     caracteristicasEdificio: {
-      areaDeLazer: true,
       piscina: true,
-      piscinaDeRaia: true,
-      mercadinho: true,
-      lavanderia: true,
-      quadraDeTenis: true,
-      quadraDeAreia: false,
-      quadraEsportiva: true,
       academia: true,
-      playground: true,
       salaoDeJogos: true,
-      sauna: true,
-      portaoEletronico: true,
-      precisaDeAutorizacao: true,
       tipoPortaria: "24h",
     },
-
     proprietario: {
-      nome: "Carla Matos",
-      contato: "5531999993333",
-      horarioContato: "Qualquer horário",
-    },
-    emDestaque: true,
-    status: "Ativo",
-    dataCadastro: "2025-06-10",
-    fotos: ["/imoveis/imovel-3.jpg"],
-  },
-  {
-    id: "49578", // Código que usamos no exemplo de busca
-    titulo: "Loja Comercial no Centro",
-    finalidade: "Alugar",
-    tipo: "loja",
-    descricao:
-      "Ponto comercial excelente com grande fluxo de pessoas, ideal para seu negócio. Loja de frente para a rua.",
-    preco: 4500,
-    valorCondominio: 150,
-    valorIptu: 1800,
-    quartos: 0,
-    suites: 0,
-    banheiros: 1,
-    vagas: 0,
-    area: 80,
-    endereco: {
-      rua: "Av. Afonso Pena",
-      numero: "500",
-      bairro: "Centro",
-      cidade: "Belo Horizonte",
-      estado: "MG",
-      cep: "30130-000",
-    },
-    caracteristicasImovel: {
-      aceitaPermuta: false,
-      churrasqueira: false,
-      closet: false,
-      dce: false,
-      lavabo: false,
-      mobiliado: false,
-      naPlanta: false,
-      alugado: false,
-    },
-    caracteristicasEdificio: {
-      areaDeLazer: false,
-      piscina: false,
-      piscinaDeRaia: false,
-      mercadinho: false,
-      lavanderia: false,
-      quadraDeTenis: false,
-      quadraDeAreia: false,
-      quadraEsportiva: false,
-      academia: false,
-      playground: false,
-      salaoDeJogos: false,
-      sauna: false,
-      portaoEletronico: false,
-      precisaDeAutorizacao: false,
-      tipoPortaria: "Nenhuma",
-    },
-
-    proprietario: {
-      nome: "Daniel Investidor",
-      contato: "5531999994444",
+      nome: "Construtora Alfa",
+      contato: "5531999990001",
       horarioContato: "Comercial",
     },
-    emDestaque: false,
-    status: "Ativo",
-    dataCadastro: "2025-06-09",
-    fotos: ["/imoveis/imovel-4.jpg"],
+    fotos: generatePhotos(0),
+    videoUrl: "https://www.youtube.com/embed/dQw4w9WgXcQ",
   },
-  // Adicione os outros 4 imóveis seguindo esta mesma estrutura completa.
+  {
+    id: "49579",
+    titulo: "Casa em Condomínio - Vila da Serra",
+    descricao:
+      "Casa moderna em condomínio fechado com segurança 24h. Acabamento de alto padrão e área de lazer privativa.",
+    preco: 3500000,
+    valorCondominio: 2000,
+    valorIptu: 9000,
+    quartos: 4,
+    suites: 3,
+    banheiros: 5,
+    vagas: 5,
+    area: 450,
+    finalidade: "Comprar", // CORRETO
+    tipo: "casa-condominio",
+    emDestaque: true,
+    status: "Ativo",
+    dataCadastro: "2025-06-18",
+    endereco: {
+      rua: "Alameda da Serra",
+      numero: "500",
+      bairro: "Vila da Serra",
+      cidade: "Nova Lima",
+      estado: "MG",
+      cep: "34006-050",
+    },
+    caracteristicasImovel: {
+      aceitaPermuta: true,
+      churrasqueira: true,
+      closet: true,
+      dce: true,
+      lavabo: true,
+    },
+    caracteristicasEdificio: {
+      quadraDeTenis: true,
+      academia: true,
+      tipoPortaria: "24h",
+    },
+    proprietario: {
+      nome: "Família Medeiros",
+      contato: "5531999990002",
+      horarioContato: "A combinar",
+    },
+    fotos: generatePhotos(1),
+    videoUrl: "https://www.youtube.com/embed/dQw4w9WgXcQ",
+  },
+  // Mais 18 imóveis gerados...
+  ...Array.from({ length: 18 }, (_, i) => {
+    const index = i + 2;
+    const bairros = [
+      "Savassi",
+      "Lourdes",
+      "Buritis",
+      "Castelo",
+      "Anchieta",
+      "Sion",
+      "Centro",
+      "Pampulha",
+    ];
+    const tipos = ["apartamento", "casa", "cobertura", "loja", "terreno"];
+    const imovelTipo = tipos[index % tipos.length]!;
+
+    // 👇 GARANTIMOS QUE A FINALIDADE É DO TIPO CORRETO 👇
+    const finalidadeImovel: "Comprar" | "Alugar" =
+      index % 3 === 0 ? "Alugar" : "Comprar";
+    const portariaTypes: Imovel["caracteristicasEdificio"]["tipoPortaria"][] = [
+      "Nenhuma",
+      "24h",
+      "Virtual",
+      "Diurna",
+      "Noturna",
+    ];
+    const statusPermitidos: Imovel["status"][] = [
+      "Ativo",
+      "Vendido",
+      "Inativo",
+    ];
+
+    return {
+      id: `${49580 + index - 2}`,
+      titulo: `${imovelTipo.charAt(0).toUpperCase() + imovelTipo.slice(1)} ${
+        finalidadeImovel === "Alugar" ? "para Alugar" : ""
+      } no Bairro ${bairros[index % bairros.length]}`,
+      descricao: `Descrição padrão para o imóvel de código ${
+        49580 + index - 2
+      }. Ótima localização e acabamento.`,
+      preco:
+        finalidadeImovel === "Alugar"
+          ? 2500 + index * 150
+          : 700000 + index * 45000,
+      valorCondominio: imovelTipo === "apartamento" ? 400 + index * 20 : 0,
+      valorIptu: 1500 + index * 80,
+      quartos:
+        imovelTipo === "apartamento" ||
+        imovelTipo === "casa" ||
+        imovelTipo === "cobertura"
+          ? 2 + (index % 3)
+          : 0,
+      suites:
+        imovelTipo === "apartamento" ||
+        imovelTipo === "casa" ||
+        imovelTipo === "cobertura"
+          ? 1 + (index % 2)
+          : 0,
+      banheiros:
+        imovelTipo === "apartamento" ||
+        imovelTipo === "casa" ||
+        imovelTipo === "cobertura"
+          ? 2 + (index % 2)
+          : 1,
+      vagas:
+        imovelTipo === "apartamento" ||
+        imovelTipo === "casa" ||
+        imovelTipo === "cobertura"
+          ? 1 + (index % 3)
+          : 0,
+      area: 80 + index * 12,
+      finalidade: finalidadeImovel, // Usando a variável com o tipo correto
+      tipo: imovelTipo,
+      emDestaque: index < 6,
+      status: statusPermitidos[index % statusPermitidos.length]!,
+      dataCadastro: `2025-06-${(17 - index > 0 ? 17 - index : 1)
+        .toString()
+        .padStart(2, "0")}`,
+      endereco: {
+        rua: `Rua de Teste, ${index}`,
+        numero: `${100 + index}`,
+        bairro: bairros[index % bairros.length]!,
+        cidade: "Belo Horizonte",
+        estado: "MG",
+        cep: "30000-000",
+      },
+      caracteristicasImovel: {
+        churrasqueira: index % 3 === 0,
+        mobiliado: index % 4 === 0,
+      },
+      caracteristicasEdificio: {
+        academia: index % 2 === 0,
+        portaoEletronico: true,
+        tipoPortaria: portariaTypes[index % portariaTypes.length]!,
+      },
+      proprietario: {
+        nome: `Proprietário ${index}`,
+        contato: `55319999910${index.toString().padStart(2, "0")}`,
+        horarioContato: "Comercial",
+      },
+      fotos: generatePhotos(index),
+      videoUrl: "https://www.youtube.com/embed/dQw4w9WgXcQ",
+    };
+  }),
 ];

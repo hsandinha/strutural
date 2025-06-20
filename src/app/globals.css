@@ -39,3 +39,14 @@ body {
 .swiper-container {
   padding-bottom: 40px; /* ou o valor que combine com o bottom dos bullets */
 }
+
+.swiper-button-next:hover::after,
+.swiper-button-prev:hover::after {
+  color: #a5b4fc !important; /* Um tom de azul claro/índigo para o hover */
+}
+
+.small-daypicker {
+  font-size: 0.75rem; /* menor fonte */
+  --rdp-day-size: 1.5rem; /* tamanho dos dias, se suportado */
+  --rdp-day-spacing: 0.25rem; /* espaçamento entre dias */
+}

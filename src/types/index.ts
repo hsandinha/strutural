@@ -64,6 +64,7 @@ export interface Imovel {
   status: "Ativo" | "Vendido" | "Inativo";
   dataCadastro: string;
   fotos: string[];
+  videoUrl?: string;
 }
 
 export type SearchFilters = {

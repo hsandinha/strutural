@@ -1,18 +1,25 @@
 // src/components/PropertyCard.tsx
+"use client";
 
 import { useState } from "react";
 import { Imovel } from "@/types";
 import Image from "next/image";
 import Link from "next/link";
-import { Bed, Bath, Scan, Heart } from "lucide-react";
+import { Heart, Bed, Bath, Scan } from "lucide-react";
 
-// Definimos as propriedades que o nosso componente vai receber
+// --- Imports do Swiper ---
+import { Swiper, SwiperSlide } from "swiper/react";
+import { Navigation, Pagination } from "swiper/modules";
+import "swiper/css";
+import "swiper/css/navigation";
+import "swiper/css/pagination";
+
 interface PropertyCardProps {
   imovel: Imovel;
 }
 
-// Função para formatar o preço como moeda brasileira
 const formatPrice = (price: number) => {
+  if (!price) return "A consultar";
   return new Intl.NumberFormat("pt-BR", {
     style: "currency",
     currency: "BRL",
@@ -20,78 +27,94 @@ const formatPrice = (price: number) => {
 };
 
 export function PropertyCard({ imovel }: PropertyCardProps) {
-  // Estado para controlar se o card está favoritado
-  const [isFavorited, setIsFavorited] = useState(false);
+  // Estado para controlar se o carrossel deve ser exibido
+  const [isHovered, setIsHovered] = useState(false);
 
-  const handleFavoriteClick = (e: React.MouseEvent<HTMLButtonElement>) => {
-    // Previne que o clique no coração também ative o link do card
-    e.preventDefault();
-    e.stopPropagation();
-
-    setIsFavorited(!isFavorited);
-    // No futuro, aqui chamaremos a função para salvar no Firebase
-    console.log(
-      `Imóvel ${imovel.id} foi ${!isFavorited ? "favoritado" : "desfavoritado"}`
-    );
-  };
   return (
-    // O card inteiro é um link para a página de detalhes do imóvel
-    <Link href={`/imoveis/${imovel.id}`} className="block h-full">
-      <div className="border rounded-lg overflow-hidden shadow-lg hover:shadow-2xl transition-shadow duration-300 group h-full flex flex-col">
-        {/* Imagem do Imóvel */}
-        <div className="relative w-full h-56 overflow-hidden">
-          <Image
-            src={imovel.fotos[0]} // Usamos a primeira foto do array
-            alt={`Foto do imóvel ${imovel.titulo}`}
-            fill // Preenche o container
-            style={{ objectFit: "cover" }} // Garante que a imagem cubra o espaço sem distorcer
-            className="transition-transform duration-500 group-hover:scale-110"
-          />
+    <div
+      className="border rounded-lg overflow-hidden shadow-md hover:shadow-xl transition-all duration-300 h-full flex flex-col group"
+      // Eventos para ativar o carrossel ao passar o mouse
+      onMouseEnter={() => setIsHovered(true)}
+      onMouseLeave={() => setIsHovered(false)}
+    >
+      <div className="relative w-full h-56">
+        <button className="absolute top-3 right-3 z-10 bg-white/70 backdrop-blur-sm p-2 rounded-full hover:bg-white transition-colors">
+          <Heart size={20} className="text-gray-600" />
+        </button>
 
-          {/* Botão de Favoritar */}
-          <button
-            onClick={handleFavoriteClick}
-            className="absolute top-3 right-3 cursor-pointer"
-            aria-label="Favoritar imóvel"
+        {isHovered && imovel.fotos.length > 1 ? (
+          // --- Renderiza o CARROSSEL quando o mouse está sobre o card ---
+          <Swiper
+            modules={[Navigation, Pagination]}
+            navigation
+            pagination={{ clickable: true }}
+            loop={true}
+            className="h-full w-full"
+            // Estilos customizados para os botões e paginação do Swiper
+            style={
+              {
+                "--swiper-navigation-color": "#fff",
+                "--swiper-pagination-color": "#fff",
+                "--swiper-navigation-size": "15px",
+              } as React.CSSProperties
+            }
           >
-            <Heart
-              size={15}
-              className={`transition-all ${
-                isFavorited ? "text-red-500 fill-red-500" : "text-gray-700"
-              }`}
+            {imovel.fotos.map((foto, index) => (
+              <SwiperSlide key={index} className="overflow-hidden">
+                <Link
+                  href={`/imoveis/${imovel.id}`}
+                  className="block h-full w-full"
+                >
+                  <Image
+                    src={foto}
+                    alt={`Foto ${index + 1} de ${imovel.titulo}`}
+                    fill
+                    style={{ objectFit: "cover" }}
+                    className="group-hover:scale-105 transition-transform duration-300"
+                  />
+                </Link>
+              </SwiperSlide>
+            ))}
+          </Swiper>
+        ) : (
+          // --- Renderiza uma IMAGEM ESTÁTICA por padrão ---
+          <Link href={`/imoveis/${imovel.id}`} className="block h-full w-full">
+            <Image
+              src={imovel.fotos[0]}
+              alt={imovel.titulo}
+              fill
+              style={{ objectFit: "cover" }}
+              className="group-hover:scale-105 transition-transform duration-300"
             />
-          </button>
-        </div>
+          </Link>
+        )}
+      </div>
 
-        {/* Conteúdo do Card */}
-        <div className="p-4 bg-white flex flex-col flex-grow">
-          <h3 className="text-lg font-bold text-gray-800 truncate">
-            {imovel.titulo}
-          </h3>
-          <p className="text-sm text-gray-600 mt-1">
-            {imovel.endereco.bairro}, {imovel.endereco.cidade}
-          </p>
-          <p className="text-2xl font-extrabold text-blue-600 my-4">
+      <div className="p-4 flex-grow flex flex-col">
+        <h3 className="text-lg font-semibold text-gray-800 truncate">
+          {imovel.titulo}
+        </h3>
+        <p className="text-sm text-gray-600 mb-4">
+          {imovel.endereco.bairro}, {imovel.endereco.cidade}
+        </p>
+
+        <div className="mt-auto">
+          <p className="text-2xl font-bold text-blue-700 mb-4">
             {formatPrice(imovel.preco)}
           </p>
-
-          {/* Detalhes com Ícones (usando mt-auto para empurrar para o final) */}
-          <div className="flex justify-around items-center border-t pt-3 text-sm text-gray-700 mt-auto">
-            <div className="flex items-center gap-2">
-              <Bed size={18} />
-              <span>{imovel.quartos}</span>
-            </div>
-            <div className="flex items-center gap-2">
-              <Bath size={18} />
-              <span>{imovel.banheiros}</span>
-            </div>
-            <div className="flex items-center gap-2">
-              <Scan size={18} />
-              <span>{imovel.area} m²</span>
-            </div>
+          <div className="flex justify-between items-center text-sm text-gray-600 border-t pt-3">
+            <span className="flex items-center gap-2">
+              <Bed size={16} /> {imovel.quartos}
+            </span>
+            <span className="flex items-center gap-2">
+              <Bath size={16} /> {imovel.banheiros}
+            </span>
+            <span className="flex items-center gap-2">
+              <Scan size={16} /> {imovel.area} m²
+            </span>
           </div>
         </div>
       </div>
-    </Link>
+    </div>
   );
 }
