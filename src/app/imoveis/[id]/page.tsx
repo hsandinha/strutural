@@ -93,6 +93,8 @@ export default function PropertyDetailsPage() {
   const [imovel, setImovel] = useState<Imovel | null>(null);
   // Estado para controlar o modal de contato
   const [isContactModalOpen, setIsContactModalOpen] = useState(false);
+  const inputClass =
+    "mt-1 w-full p-2 rounded-md shadow-sm border border-white focus:ring-blue-500 focus:border-blue-500 transition-colors";
 
   // Efeito para buscar o imóvel quando a página carrega
   useEffect(() => {
@@ -299,7 +301,7 @@ export default function PropertyDetailsPage() {
           onClick={() => setIsContactModalOpen(false)}
         >
           <div
-            className="bg-white rounded-xl p-8 relative w-full max-w-lg"
+            className="bg-black/60 rounded-xl p-8 relative w-full max-w-lg max-h-[90vh] overflow-y-auto"
             onClick={(e) => e.stopPropagation()}
           >
             <button
@@ -308,14 +310,15 @@ export default function PropertyDetailsPage() {
             >
               <X size={24} />
             </button>
-            <h2 className="text-2xl font-bold mb-2">Contatar sobre o imóvel</h2>
-            <p className="text-sm text-gray-600 mb-6">"{imovel.titulo}"</p>
+            <p className="text-sm text-white mb-2 ">
+              Contato sobre o imóvel - "{imovel.titulo}"
+            </p>
 
             <form onSubmit={handleContactSubmit} className="space-y-4">
               <div>
                 <label
                   htmlFor="nome"
-                  className="block text-sm font-medium text-gray-700"
+                  className="block text-xs font-medium text-white  "
                 >
                   Seu nome*
                 </label>
@@ -325,13 +328,13 @@ export default function PropertyDetailsPage() {
                   required
                   value={contactName}
                   onChange={(e) => setContactName(e.target.value)}
-                  className="mt-1 w-full border-gray-300 rounded-md shadow-sm p-2"
+                  className={inputClass}
                 />
               </div>
               <div>
                 <label
                   htmlFor="email"
-                  className="block text-sm font-medium text-gray-700"
+                  className="block text-xs font-medium text-white"
                 >
                   Seu email*
                 </label>
@@ -341,13 +344,13 @@ export default function PropertyDetailsPage() {
                   required
                   value={contactEmail}
                   onChange={(e) => setContactEmail(e.target.value)}
-                  className="mt-1 w-full border-gray-300 rounded-md shadow-sm p-2"
+                  className={inputClass}
                 />
               </div>
               <div>
                 <label
                   htmlFor="telefone"
-                  className="block text-sm font-medium text-gray-700"
+                  className="block text-xs font-medium text-white"
                 >
                   Seu telefone
                 </label>
@@ -356,13 +359,13 @@ export default function PropertyDetailsPage() {
                   id="telefone"
                   value={contactPhone}
                   onChange={(e) => setContactPhone(e.target.value)}
-                  className="mt-1 w-full border-gray-300 rounded-md shadow-sm p-2"
+                  className={inputClass}
                 />
               </div>
               <div>
                 <label
                   htmlFor="mensagem"
-                  className="block text-sm font-medium text-gray-700"
+                  className="block text-xs font-medium text-white"
                 >
                   Mensagem
                 </label>
@@ -371,7 +374,7 @@ export default function PropertyDetailsPage() {
                   rows={4}
                   value={contactMessage}
                   onChange={(e) => setContactMessage(e.target.value)}
-                  className="mt-1 w-full border-gray-300 rounded-md shadow-sm p-2"
+                  className={inputClass}
                 ></textarea>
               </div>
               <button
