@@ -1,15 +1,11 @@
-// src/app/imoveis/[id]/page.tsx
 "use client";
 
-// --- Imports Essenciais ---
 import { useState, useEffect } from "react";
 import { useParams } from "next/navigation";
-import { mockImoveis } from "@/lib/mockData";
 import { Imovel } from "@/types";
 import Image from "next/image";
 import Link from "next/link";
 import { ScheduleVisitModal } from "@/components/ScheduleVisitModal";
-// --- Imports de Ícones ---
 import {
   Bed,
   Bath,
@@ -19,19 +15,12 @@ import {
   Sofa,
   CheckCircle2,
   CalendarPlus,
-  MessageSquare,
-  Mail,
   X,
-  ArrowLeftCircle,
 } from "lucide-react";
-
-// --- Import do Novo Componente de Galeria ---
-// (Vamos criar este componente no próximo passo)
 import { PropertyMediaGallery } from "@/components/PropertyMediaGallery";
+import { doc, getDoc } from "firebase/firestore";
+import { db } from "@/lib/firebaseConfig";
 
-// --- Componentes Auxiliares ---
-
-// Função para formatar números como moeda brasileira
 const formatPrice = (price: number) => {
   if (!price || price === 0) return "A consultar";
   return new Intl.NumberFormat("pt-BR", {
@@ -40,7 +29,6 @@ const formatPrice = (price: number) => {
   }).format(price);
 };
 
-// Componente para renderizar uma lista de características
 const FeatureList = ({
   title,
   features,
@@ -50,11 +38,9 @@ const FeatureList = ({
 }) => {
   if (!features) return null;
 
-  // Filtra apenas as características que estão marcadas como 'true'
   const activeFeatures = Object.entries(features)
-    .filter(([key, value]) => value === true)
+    .filter(([_, value]) => value === true)
     .map(([key]) => {
-      // Formata a chave para um texto legível (ex: 'aceitaPermuta' -> 'Aceita Permuta')
       const formatted = key.replace(/([A-Z])/g, " $1");
       return formatted.charAt(0).toUpperCase() + formatted.slice(1);
     });
@@ -63,12 +49,12 @@ const FeatureList = ({
 
   return (
     <div className="mt-10">
-      <h3 className="text-sm  text-gray-800 mb-4">{title}</h3>
+      <h3 className="text-sm text-gray-800 mb-4">{title}</h3>
       <ul className="grid grid-cols-2 md:grid-cols-3 gap-x-4 gap-y-3">
         {activeFeatures.map((feature) => (
           <li
             key={feature}
-            className="flex items-center gap-2 text-sm  text-gray-700"
+            className="flex items-center gap-2 text-sm text-gray-700"
           >
             <CheckCircle2 size={16} className="text-green-500 shrink-0" />
             <span>{feature}</span>
@@ -79,32 +65,41 @@ const FeatureList = ({
   );
 };
 
-// --- Componente Principal da Página de Detalhes ---
 export default function PropertyDetailsPage() {
   const params = useParams();
   const id = params.id as string;
+
   const [contactName, setContactName] = useState("");
   const [contactEmail, setContactEmail] = useState("");
   const [contactPhone, setContactPhone] = useState("");
   const [contactMessage, setContactMessage] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isVisitModalOpen, setIsVisitModalOpen] = useState(false);
-  // Estado para guardar o imóvel encontrado
   const [imovel, setImovel] = useState<Imovel | null>(null);
-  // Estado para controlar o modal de contato
   const [isContactModalOpen, setIsContactModalOpen] = useState(false);
+
   const inputClass =
     "mt-1 w-full p-2 rounded-md shadow-sm border border-white focus:ring-blue-500 focus:border-blue-500 transition-colors";
 
-  // Efeito para buscar o imóvel quando a página carrega
   useEffect(() => {
-    if (id) {
-      const imovelEncontrado = mockImoveis.find((p) => p.id === id);
-      setImovel(imovelEncontrado || null);
+    async function fetchImovel() {
+      if (!id) return;
+      try {
+        const docRef = doc(db, "imoveis", id);
+        const docSnap = await getDoc(docRef);
+        if (docSnap.exists()) {
+          setImovel({ id: docSnap.id, ...docSnap.data() } as Imovel);
+        } else {
+          setImovel(null);
+        }
+      } catch (error) {
+        console.error("Erro ao buscar imóvel:", error);
+        setImovel(null);
+      }
     }
+    fetchImovel();
   }, [id]);
 
-  // Efeito para preencher a mensagem padrão quando o modal abre
   useEffect(() => {
     if (isContactModalOpen && imovel) {
       setContactMessage(
@@ -114,23 +109,11 @@ export default function PropertyDetailsPage() {
   }, [isContactModalOpen, imovel]);
 
   const handleContactSubmit = (e: React.FormEvent) => {
-    // 1. Previne o recarregamento padrão da página
     e.preventDefault();
     setIsSubmitting(true);
+    // Aqui você pode implementar o envio do contato
   };
 
-  const leadData = {
-    nome: contactName,
-    email: contactEmail,
-    telefone: contactPhone,
-    mensagem: contactMessage,
-    imovelDeInteresse: {
-      id: imovel?.id,
-      titulo: imovel?.titulo,
-    },
-  };
-
-  // Enquanto os dados do imóvel não são carregados, exibe uma mensagem
   if (!imovel) {
     return (
       <div className="flex items-center justify-center h-screen">
@@ -139,25 +122,20 @@ export default function PropertyDetailsPage() {
     );
   }
 
-  // --- RENDERIZAÇÃO DO JSX ---
   return (
     <>
       <main className="bg-white min-h-screen">
         <div className="container mx-auto px-4 py-3">
-          {/* Componente da Galeria de Mídia */}
           <PropertyMediaGallery imovel={imovel} />
           <hr className="my-0 h-px border-0 bg-gray-200" />
 
           <div className="grid lg:grid-cols-3 gap-8 lg:gap-12 items-start">
-            {/* Coluna Principal (Esquerda) */}
             <div className="col-span-2 text-sm max-w-200 ">
               <div className="mb-8">
-                {/* Título*/}
                 <h2 className="text-4xl lg:text-3xl font-bold text-gray-900 py-3">
                   {imovel.titulo}
                 </h2>
 
-                {/* endereço*/}
                 <div className="flex items-center gap-2 text-gray-600 mt-0 py-0">
                   <MapPin size={20} />
                   <span>
@@ -165,56 +143,56 @@ export default function PropertyDetailsPage() {
                   </span>
                 </div>
 
-                {/* icones*/}
                 <div className="grid grid-cols-5 gap-2 text-left py-7 max-w-200">
                   <div className="flex flex-col items-center">
-                    <Bed size={24} className="mb-1 text-gray-600" />{" "}
+                    <Bed size={24} className="mb-1 text-gray-600" />
                     <span className="text-sm text-black">
                       {imovel.quartos} Quartos
                     </span>
                   </div>
                   <div className="flex flex-col items-center">
-                    <Sofa size={24} className="mb-1 text-gray-600" />{" "}
-                    <span className="text-sm text-black ">
+                    <Sofa size={24} className="mb-1 text-gray-600" />
+                    <span className="text-sm text-black">
                       {imovel.suites} Suítes
                     </span>
                   </div>
                   <div className="flex flex-col items-center">
-                    <Bath size={24} className="mb-1 text-gray-600" />{" "}
+                    <Bath size={24} className="mb-1 text-gray-600" />
                     <span className="text-sm text-black">
                       {imovel.banheiros} Banheiros
                     </span>
                   </div>
                   <div className="flex flex-col items-center">
-                    <CarFront size={24} className="mb-1 text-gray-600" />{" "}
+                    <CarFront size={24} className="mb-1 text-gray-600" />
                     <span className="text-sm text-black">
                       {imovel.vagas} Vagas
                     </span>
                   </div>
                   <div className="flex flex-col items-center">
-                    <Scan size={24} className="mb-1 text-gray-600" />{" "}
+                    <Scan size={24} className="mb-1 text-gray-600" />
                     <span className="text-sm text-black">{imovel.area} m²</span>
                   </div>
                 </div>
 
                 <hr className="my-0 h-px border-0 bg-gray-200 max-w-200" />
-                <div className="prose lg:prose-lg  text-sm max-w-150 text-gray-700 leading-relaxed whitespace-pre-line">
-                  Descrição Imovel:<br></br>
-                  <br></br>
+                <div className="prose lg:prose-lg text-sm max-w-150 text-gray-700 leading-relaxed whitespace-pre-line">
+                  Descrição Imovel:
+                  <br />
+                  <br />
                   {imovel.descricao}
                 </div>
               </div>
-              <h6>
-                <FeatureList
-                  title="Características do Imóvel"
-                  features={imovel.caracteristicasImovel}
-                />
-              </h6>
+
+              <FeatureList
+                title="Características do Imóvel"
+                features={imovel.caracteristicasImovel}
+              />
               <FeatureList
                 title="Características do Edifício"
                 features={imovel.caracteristicasEdificio}
               />
-              {imovel.caracteristicasEdificio.tipoPortaria !== "Nenhuma" && (
+
+              {imovel.caracteristicasEdificio?.tipoPortaria !== "Nenhuma" && (
                 <div className="mt-4 flex items-center gap-2 text-gray-700">
                   <CheckCircle2 size={16} className="text-green-500" />
                   <span>
@@ -224,11 +202,8 @@ export default function PropertyDetailsPage() {
               )}
             </div>
 
-            {/* Coluna Lateral (Direita) com o novo Card de Ação */}
             <div className="py-3 order-last lg:order-none">
               <div className="bg-white p-6 rounded-lg shadow-lg border sticky lg:top-24">
-                {/* Conteúdo do Card */}
-                {/* Seções de Cabeçalho, Valores, Corretor, Botões de Ação */}
                 <div className="flex justify-between items-center pb-4 border-b">
                   <span className="text-sm font-semibold text-gray-500">
                     IMÓVEL
@@ -256,10 +231,12 @@ export default function PropertyDetailsPage() {
                     <span>{formatPrice(imovel.valorIptu)}</span>
                   </div>
                 </div>
+
                 <hr className="my-0 h-px border-0 bg-gray-200" />
+
                 <div className="py-4 flex items-center gap-4">
                   <Image
-                    src="/Adhimar.png" // Foto de exemplo
+                    src="/Adhimar.png"
                     alt="Foto do Corretor"
                     width={56}
                     height={56}
@@ -292,7 +269,6 @@ export default function PropertyDetailsPage() {
         </div>
       </main>
 
-      {/* Modal de Contato (pop-up) */}
       {isContactModalOpen && (
         <div
           className="fixed inset-0 bg-black/60 z-50 flex justify-center items-center p-4"
@@ -316,7 +292,7 @@ export default function PropertyDetailsPage() {
               <div>
                 <label
                   htmlFor="nome"
-                  className="block text-xs font-medium text-white  "
+                  className="block text-xs font-medium text-white"
                 >
                   Seu nome*
                 </label>
@@ -373,7 +349,7 @@ export default function PropertyDetailsPage() {
                   value={contactMessage}
                   onChange={(e) => setContactMessage(e.target.value)}
                   className={inputClass}
-                ></textarea>
+                />
               </div>
               <button
                 type="submit"
@@ -386,6 +362,7 @@ export default function PropertyDetailsPage() {
           </div>
         </div>
       )}
+
       <ScheduleVisitModal
         isOpen={isVisitModalOpen}
         onClose={() => setIsVisitModalOpen(false)}

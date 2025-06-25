@@ -1,19 +1,20 @@
-// src/app/comprar/page.tsx
 "use client";
 
 import { useState, useEffect, Suspense, useCallback } from "react";
 import { useSearchParams, useRouter, usePathname } from "next/navigation";
-import { mockImoveis } from "@/lib/mockData";
+import {
+  collection,
+  query,
+  where,
+  getDocs,
+  QueryConstraint,
+} from "firebase/firestore";
+import { db } from "@/lib/firebaseConfig";
 import { Imovel, SearchFilters } from "@/types";
 import { FilterForm } from "@/components/FilterForm";
 import { PropertyCard } from "@/components/PropertyCard";
-import { Filter, Plus, PlusIcon, X } from "lucide-react";
+import { PlusIcon, X } from "lucide-react";
 
-/**
- * O Next.js recomenda usar <Suspense> ao usar o hook useSearchParams.
- * Este componente principal apenas envolve o conteúdo real em um Suspense
- * para lidar com o carregamento inicial.
- */
 export default function ComprarPage() {
   return (
     <Suspense
@@ -24,8 +25,6 @@ export default function ComprarPage() {
   );
 }
 
-// Objeto com os valores padrão para ser usado na inicialização e para limpar os filtros.
-// É a nossa "fonte da verdade" para o estado inicial de um filtro.
 const defaultFilters: SearchFilters = {
   finalidade: "Comprar",
   localizacao: [],
@@ -42,30 +41,46 @@ const defaultFilters: SearchFilters = {
   caracteristicasEdificio: [],
 };
 
-/**
- * Este componente contém toda a lógica e a aparência da página.
- */
+async function fetchImoveis(filters: SearchFilters): Promise<Imovel[]> {
+  const imoveisRef = collection(db, "imoveis");
+  const constraints: QueryConstraint[] = [];
+
+  constraints.push(where("finalidade", "==", "Comprar"));
+
+  if (filters.tipo.length > 0) {
+    // Firestore limita 'in' a 10 valores
+    constraints.push(where("tipo", "in", filters.tipo));
+  }
+
+  if (filters.quartos !== "Todos") {
+    constraints.push(where("quartos", ">=", parseInt(filters.quartos)));
+  }
+
+  // Você pode adicionar outros filtros simples aqui
+
+  const q = query(imoveisRef, ...constraints);
+  const querySnapshot = await getDocs(q);
+
+  return querySnapshot.docs.map((doc) => ({
+    id: doc.id,
+    ...doc.data(),
+  })) as Imovel[];
+}
 
 function ComprarPageContent() {
   const router = useRouter();
   const pathname = usePathname();
   const searchParams = useSearchParams();
 
-  // ----- ESTADOS DO COMPONENTE -----
   const [imoveisExibidos, setImoveisExibidos] = useState<Imovel[]>([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
-  // O estado 'filters' é um espelho do que está na URL.
   const [filters, setFilters] = useState<SearchFilters>(defaultFilters);
 
-  // ----- FUNÇÕES DE ATUALIZAÇÃO E LÓGICA -----
-
-  // Função que constrói um objeto de filtros a partir dos parâmetros da URL
   const buildFiltersFromParams = useCallback(() => {
     const newFilters = { ...defaultFilters };
     searchParams.forEach((value, key) => {
       const filterKey = key as keyof SearchFilters;
       if (key in newFilters) {
-        // Se a propriedade no nosso tipo é um array, transforma a string da URL em array
         if (Array.isArray(newFilters[filterKey])) {
           (newFilters[filterKey] as string[]) = value.split(",");
         } else {
@@ -76,57 +91,59 @@ function ComprarPageContent() {
     return newFilters;
   }, [searchParams]);
 
-  // Efeito que sincroniza a URL com o estado dos filtros sempre que a URL muda
   useEffect(() => {
     const filtersFromUrl = buildFiltersFromParams();
     setFilters(filtersFromUrl);
   }, [searchParams, buildFiltersFromParams]);
 
-  // Efeito que filtra os imóveis sempre que o estado 'filters' é atualizado
   useEffect(() => {
-    let imoveisResultantes = mockImoveis.filter(
-      (imovel) => imovel.finalidade === "Comprar"
-    );
+    async function fetchAndFilterImoveis() {
+      try {
+        const imoveisFromFirestore = await fetchImoveis(filters);
 
-    // Lógica de filtragem em cascata
-    if (filters.localizacao.length > 0) {
-      imoveisResultantes = imoveisResultantes.filter((p) =>
-        filters.localizacao.some(
-          (loc) =>
-            p.endereco?.bairro?.toLowerCase() === loc.toLowerCase() ||
-            p.endereco?.cidade?.toLowerCase() === loc.toLowerCase()
-        )
-      );
-    }
-    if (filters.tipo.length > 0) {
-      imoveisResultantes = imoveisResultantes.filter((p) =>
-        filters.tipo.includes(p.tipo?.toLowerCase() || "")
-      );
-    }
-    if (filters.quartos && filters.quartos !== "Todos") {
-      imoveisResultantes = imoveisResultantes.filter(
-        (p) => p.quartos >= parseInt(filters.quartos)
-      );
+        let filtered = imoveisFromFirestore;
+
+        if (filters.localizacao.length > 0) {
+          filtered = filtered.filter((p) => {
+            const bairro = p.endereco?.bairro?.toLowerCase() || "";
+            const cidade = p.endereco?.cidade?.toLowerCase() || "";
+
+            return filters.localizacao.some((loc) => {
+              const locLower = loc.toLowerCase();
+              if (locLower.includes(",")) {
+                const [filtroBairro, filtroCidade] = locLower
+                  .split(",")
+                  .map((s) => s.trim());
+                return bairro === filtroBairro && cidade === filtroCidade;
+              } else {
+                return bairro === locLower || cidade === locLower;
+              }
+            });
+          });
+        }
+
+        const sortOrder = searchParams.get("sort") || "relevancia";
+        if (sortOrder === "preco_asc") {
+          filtered.sort((a, b) => a.preco - b.preco);
+        } else if (sortOrder === "preco_desc") {
+          filtered.sort((a, b) => b.preco - a.preco);
+        } else if (sortOrder === "data_desc") {
+          filtered.sort(
+            (a, b) =>
+              new Date(b.dataCadastro).getTime() -
+              new Date(a.dataCadastro).getTime()
+          );
+        }
+
+        setImoveisExibidos(filtered);
+      } catch (error) {
+        console.error("Erro ao buscar imóveis do Firestore:", error);
+        setImoveisExibidos([]);
+      }
     }
 
-    const sortOrder = searchParams.get("sort") || "relevancia"; // Pega a ordem da URL
-
-    if (sortOrder === "preco_asc") {
-      imoveisResultantes.sort((a, b) => a.preco - b.preco);
-    } else if (sortOrder === "preco_desc") {
-      imoveisResultantes.sort((a, b) => b.preco - a.preco);
-    } else if (sortOrder === "data_desc") {
-      // Ordena por data, do mais novo para o mais antigo
-      imoveisResultantes.sort(
-        (a, b) =>
-          new Date(b.dataCadastro).getTime() -
-          new Date(a.dataCadastro).getTime()
-      );
-    }
-
-    setImoveisExibidos(imoveisResultantes);
-  }, [filters]);
-  // ... adicione a lógica para os outros filtros aqui (banheiros, valor, area, etc)
+    fetchAndFilterImoveis();
+  }, [filters, searchParams]);
 
   const handleSortChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     const newSortOrder = e.target.value;
@@ -140,12 +157,10 @@ function ComprarPageContent() {
     router.push(`${pathname}?${params.toString()}`);
   };
 
-  // Função que atualiza a URL com os novos filtros
   const updateUrlWithFilters = (newFilters: SearchFilters) => {
     const params = new URLSearchParams();
     (Object.keys(newFilters) as Array<keyof SearchFilters>).forEach((key) => {
       const value = newFilters[key];
-      // Apenas adiciona à URL se não for o valor padrão
       if (Array.isArray(value)) {
         if (value.length > 0) params.set(key, value.join(","));
       } else if (value && value !== defaultFilters[key]) {
@@ -155,7 +170,6 @@ function ComprarPageContent() {
     router.push(`${pathname}?${params.toString()}`);
   };
 
-  // Função para remover um "pill" de filtro (atualizando a URL)
   const removeFilterPill = (
     filterName: keyof SearchFilters,
     valueToRemove?: string
@@ -166,22 +180,18 @@ function ComprarPageContent() {
     if (Array.isArray(currentValues) && valueToRemove) {
       newValues = currentValues.filter((v) => v !== valueToRemove);
     } else {
-      newValues = defaultFilters[filterName]; // Reseta para o valor padrão
+      newValues = defaultFilters[filterName];
     }
     updateUrlWithFilters({ ...filters, [filterName]: newValues });
   };
 
-  // Função para capitalizar texto para exibição nos pills
   const capitalize = (s: string) =>
     s.charAt(0).toUpperCase() + s.slice(1).replace(/-/g, " ");
 
-  // ----- RENDERIZAÇÃO DO COMPONENTE -----
   return (
     <main className="bg-white min-h-screen">
       <div className="container mx-auto px-4 py-8">
-        {/* Cabeçalho da página */}
         <div className="flex flex-col md:flex-row justify-between items-center mb-6 gap-4">
-          {/* Lado Esquerdo: Título */}
           <div>
             <h1 className="text-3xl font-bold text-gray-800">
               Imóveis à Venda
@@ -191,7 +201,6 @@ function ComprarPageContent() {
             </p>
           </div>
 
-          {/* Lado Direito: Controles de Ordenação e Filtro */}
           <div className="flex items-center gap-4 w-full sm:w-auto">
             <div>
               <label htmlFor="sort" className="sr-only">
@@ -211,7 +220,7 @@ function ComprarPageContent() {
 
             <button
               onClick={() => setIsModalOpen(true)}
-              className="flex items-center gap-2 border-gray-300 text-black font-semibold py-2 px-5  cursor-pointer hover:bg-blue-500 transition-colors whitespace-nowrap text-sm rounded-md shadow-sm"
+              className="flex items-center gap-2 border-gray-300 text-black font-semibold py-2 px-5 cursor-pointer hover:bg-blue-500 transition-colors whitespace-nowrap text-sm rounded-md shadow-sm"
             >
               <PlusIcon size={18} />
               <span>Mais Filtros</span>
@@ -219,7 +228,6 @@ function ComprarPageContent() {
           </div>
         </div>
 
-        {/* "Pills" de Filtros Ativos */}
         <div className="flex flex-wrap gap-2 mb-8 min-h-[30px]">
           {filters.localizacao.map((loc) => (
             <div
@@ -262,7 +270,6 @@ function ComprarPageContent() {
           )}
         </div>
 
-        {/* Grade de Imóveis */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
           {imoveisExibidos.length > 0 ? (
             imoveisExibidos.map((imovel) => (
@@ -276,7 +283,6 @@ function ComprarPageContent() {
         </div>
       </div>
 
-      {/* Modal de Filtros */}
       {isModalOpen && (
         <div className="fixed inset-0 bg-black/60 z-40 flex justify-center items-center p-4">
           <div className="bg-white rounded-xl p-8 relative w-full max-w-2xl max-h-[90vh] overflow-y-auto">
@@ -286,52 +292,14 @@ function ComprarPageContent() {
             >
               <X size={24} />
             </button>
-            <ModalFilterContent
-              currentFilters={filters}
-              onApply={updateUrlWithFilters}
+            <FilterForm
+              filters={filters}
+              onFiltersChange={updateUrlWithFilters}
               closeModal={() => setIsModalOpen(false)}
             />
           </div>
         </div>
       )}
     </main>
-  );
-}
-
-// Componente interno para o conteúdo do modal
-function ModalFilterContent({
-  currentFilters,
-  onApply,
-  closeModal,
-}: {
-  currentFilters: SearchFilters;
-  onApply: (filters: SearchFilters) => void;
-  closeModal: () => void;
-}) {
-  const [modalFilters, setModalFilters] = useState(currentFilters);
-
-  const handleApply = () => {
-    onApply(modalFilters);
-    closeModal();
-  };
-
-  return (
-    <>
-      <FilterForm filters={modalFilters} onFiltersChange={setModalFilters} />
-      <div className="flex justify-end items-center mt-6 gap-4">
-        <button
-          onClick={closeModal}
-          className="text-sm text-gray-600 hover:underline"
-        >
-          Limpar e Fechar
-        </button>
-        <button
-          onClick={handleApply}
-          className="bg-blue-600 text-white font-bold py-2 px-8 rounded-lg hover:bg-blue-700"
-        >
-          Ver Imóveis
-        </button>
-      </div>
-    </>
   );
 }

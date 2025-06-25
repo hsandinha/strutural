@@ -1,20 +1,20 @@
-// src/components/FilterForm.tsx
 "use client";
 
 import type { SearchFilters, Imovel } from "@/types";
 import { AutocompleteSearch } from "./AutocompleteSearch";
 import { useState } from "react";
-import { mockImoveis } from "@/lib/mockData";
 import Link from "next/link";
 import Image from "next/image";
 import { Search, X } from "lucide-react";
+import { doc, getDoc } from "firebase/firestore";
+import { db } from "@/lib/firebaseConfig";
 
 interface FilterFormProps {
   filters: SearchFilters;
   onFiltersChange: (newFilters: SearchFilters) => void;
+  closeModal: () => void; // Adicione esta linha
 }
 
-// Pequeno componente auxiliar para os botões (Quartos, Banheiros, etc)
 const ButtonGroupField = ({ label, name, value, options, onChange }: any) => (
   <div>
     <label className="block text-sm font-semibold text-gray-700 mb-2">
@@ -40,7 +40,6 @@ const ButtonGroupField = ({ label, name, value, options, onChange }: any) => (
   </div>
 );
 
-// Componente principal do formulário
 export function FilterForm({ filters, onFiltersChange }: FilterFormProps) {
   const [codeQuery, setCodeQuery] = useState("");
   const [codeSearchAttempted, setCodeSearchAttempted] = useState(false);
@@ -66,6 +65,7 @@ export function FilterForm({ filters, onFiltersChange }: FilterFormProps) {
       [name]: filters[name as keyof typeof filters] === value ? "Todos" : value,
     });
   };
+
   const handleCheckboxChange = (
     group: "tipo" | "caracteristicasImovel" | "caracteristicasEdificio",
     value: string
@@ -92,12 +92,23 @@ export function FilterForm({ filters, onFiltersChange }: FilterFormProps) {
     onFiltersChange({ ...filters, localizacao: newLocations });
   };
 
-  const handleCodeSearch = (e: React.MouseEvent<HTMLButtonElement>) => {
+  const handleCodeSearch = async (e: React.MouseEvent<HTMLButtonElement>) => {
     e.preventDefault();
     setCodeSearchAttempted(true);
     if (!codeQuery) return;
-    const result = mockImoveis.find((p) => p.id === codeQuery);
-    setFoundProperty(result || null);
+
+    try {
+      const docRef = doc(db, "imoveis", codeQuery);
+      const docSnap = await getDoc(docRef);
+      if (docSnap.exists()) {
+        setFoundProperty({ id: docSnap.id, ...docSnap.data() } as Imovel);
+      } else {
+        setFoundProperty(null);
+      }
+    } catch (error) {
+      console.error("Erro ao buscar imóvel por código:", error);
+      setFoundProperty(null);
+    }
   };
 
   const tiposDeImovel = [
@@ -117,8 +128,8 @@ export function FilterForm({ filters, onFiltersChange }: FilterFormProps) {
     { name: "Prédio Comercial", value: "predio-comercial" },
     { name: "Salas", value: "sala" },
     { name: "Vaga de Garagem", value: "garagem" },
-    // Adicione os outros tipos aqui seguindo o mesmo padrão
   ];
+
   const caracteristicasImovel = [
     "Aceita Permuta",
     "Área Privativa",
@@ -131,20 +142,19 @@ export function FilterForm({ filters, onFiltersChange }: FilterFormProps) {
     "Na Planta",
     "Alugado",
   ];
+
   const caracteristicasEdificio = [
     "Piscina",
     "Quadra de Tênis",
     "Academia",
     "Área de Lazer",
-    "Playground",
+    "Code playground",
     "Portaria 24h",
     "Quadra Esportiva",
     "Salão de Jogos",
     "Sauna",
     "Portão Eletrônico",
   ];
-  const inputClass =
-    "w-full border-gray-300 rounded-md p-2 shadow-sm focus:ring-blue-500 focus:border-blue-500";
 
   return (
     <form className="space-y-6">
@@ -152,9 +162,7 @@ export function FilterForm({ filters, onFiltersChange }: FilterFormProps) {
         Busca Detalhada
       </h1>
 
-      {/* Código e Bairro/Cidade - ESTRUTURA CORRIGIDA */}
       <div className="grid grid-cols-1 ">
-        {/* Campo de Código com o resultado da busca */}
         <div>
           <label
             htmlFor="codigo"
@@ -165,7 +173,6 @@ export function FilterForm({ filters, onFiltersChange }: FilterFormProps) {
           <div className="flex items-center gap-0 w-full border border-gray-300 rounded-md bg-white h-12">
             <input
               type="text"
-              // 3. O input agora usa o estado local 'codeQuery'
               value={codeQuery}
               onChange={(e) => {
                 setCodeQuery(e.target.value);
@@ -174,7 +181,6 @@ export function FilterForm({ filters, onFiltersChange }: FilterFormProps) {
               placeholder="Digite o código do imóvel"
               className="w-full h-full px-3 bg-transparent focus:outline-none text-gray-700 placeholder-gray-400"
             />
-            {/* 3. A LUPA AGORA É UM BOTÃO CLICÁVEL */}
             <button
               onClick={handleCodeSearch}
               className="px-3 h-full text-gray-400 hover:text-blue-600"
@@ -183,7 +189,6 @@ export function FilterForm({ filters, onFiltersChange }: FilterFormProps) {
             </button>
           </div>
 
-          {/* 4. RESULTADO DA BUSCA (renderização condicional) */}
           {foundProperty && (
             <Link href={`/imoveis/${foundProperty.id}`} className="block mt-2">
               <div className="border rounded-md p-2 flex items-center gap-3 hover:bg-gray-50">
@@ -210,7 +215,6 @@ export function FilterForm({ filters, onFiltersChange }: FilterFormProps) {
             </Link>
           )}
 
-          {/* 3. NOVA MENSAGEM DE ERRO (renderização condicional) */}
           {codeSearchAttempted && !foundProperty && (
             <div className="mt-2 px-3 py-2 text-sm text-red-700 bg-red-100 border border-red-200 rounded-md">
               Imóvel não encontrado.
@@ -220,7 +224,6 @@ export function FilterForm({ filters, onFiltersChange }: FilterFormProps) {
       </div>
 
       <div className="grid grid-cols-1">
-        {/* Campo de Localização */}
         <div>
           <label
             htmlFor="localizacao"
@@ -252,34 +255,28 @@ export function FilterForm({ filters, onFiltersChange }: FilterFormProps) {
         </div>
       </div>
 
-      {/* Tipo de Imóvel */}
       <div>
         <h3 className="text-lg font-semibold text-gray-700 mb-3">
           Tipo de Imóvel
         </h3>
         <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-2">
-          {/* AGORA USAMOS OS OBJETOS DA NOSSA NOVA LISTA */}
           {tiposDeImovel.map((item) => (
             <button
               key={item.value}
               type="button"
-              // O onClick agora usa o 'value' (minúsculo)
               onClick={() => handleCheckboxChange("tipo", item.value)}
               className={`px-3 py-2 text-sm rounded-md border text-center ${
-                // A verificação também usa o 'value'
                 filters.tipo.includes(item.value)
                   ? "bg-blue-600 text-white border-blue-600"
                   : "bg-white text-gray-700 border-gray-300"
               }`}
             >
-              {/* A exibição usa o 'name' (capitalizado) */}
               {item.name}
             </button>
           ))}
         </div>
       </div>
 
-      {/* Quartos, Banheiros, Suítes, Vagas */}
       <div className="grid grid-cols-2 gap-x-4 gap-y-6">
         <ButtonGroupField
           label="Quartos"
@@ -311,7 +308,6 @@ export function FilterForm({ filters, onFiltersChange }: FilterFormProps) {
         />
       </div>
 
-      {/* Valor e Área */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         <div>
           <label className="block text-sm font-semibold text-gray-700 mb-2">
@@ -363,7 +359,6 @@ export function FilterForm({ filters, onFiltersChange }: FilterFormProps) {
         </div>
       </div>
 
-      {/* Características do Imóvel */}
       <div>
         <h3 className="text-lg font-semibold text-gray-700 mb-3">
           Características do Imóvel
@@ -385,7 +380,6 @@ export function FilterForm({ filters, onFiltersChange }: FilterFormProps) {
         </div>
       </div>
 
-      {/* Características do Edifício */}
       <div>
         <h3 className="text-lg font-semibold text-gray-700 mb-3">
           Características do Edifício

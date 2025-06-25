@@ -1,4 +1,3 @@
-// src/app/intranet/imoveis/novo/page.tsx
 "use client";
 
 import { useState } from "react";
@@ -6,12 +5,26 @@ import { Imovel } from "@/types";
 import { PropertyForm } from "@/components/PropertyForm";
 import Link from "next/link";
 import { ArrowLeftCircle } from "lucide-react";
+import { useRouter } from "next/navigation";
+import { Timestamp } from "firebase/firestore";
+import { criarImovelComIdSequencial } from "@/lib/firestoreUtils";
 
 export default function AdicionarImovelPage() {
   const [newProperty, setNewProperty] = useState<Partial<Imovel>>({
+    titulo: "",
+    descricao: "",
+    preco: 0,
+    valorCondominio: 0,
+    valorIptu: 0,
+    quartos: 0,
+    suites: 0,
+    banheiros: 0,
+    vagas: 0,
+    area: 0,
     finalidade: "Comprar",
-    status: "Ativo",
+    tipo: "",
     emDestaque: false,
+    status: "Ativo",
     endereco: {
       rua: "",
       numero: "",
@@ -22,7 +35,7 @@ export default function AdicionarImovelPage() {
     },
     caracteristicasImovel: {},
     caracteristicasEdificio: {
-      tipoPortaria: "Nenhuma", // valor inicial obrigatório
+      tipoPortaria: "Nenhuma",
     },
     proprietario: {
       nome: "",
@@ -30,24 +43,66 @@ export default function AdicionarImovelPage() {
       horarioContato: "",
     },
     fotos: [],
+    videoUrl: "",
     dataCadastro: new Date().toISOString(),
   });
-  const [isLoading, setIsLoading] = useState(false);
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const [isLoading, setIsLoading] = useState(false);
+  const router = useRouter();
+
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsLoading(true);
-    console.log("Salvando novo imóvel:", newProperty);
 
-    // SIMULAÇÃO DE UMA CHAMADA DE API
-    setTimeout(() => {
-      alert(
-        "Imóvel salvo com sucesso! (Simulação)\nVerifique o console para ver os dados."
-      );
+    try {
+      // Prepara os dados completos para salvar
+      const dataToSave: Omit<Imovel, "id"> = {
+        titulo: newProperty.titulo || "",
+        descricao: newProperty.descricao || "",
+        preco: newProperty.preco || 0,
+        valorCondominio: newProperty.valorCondominio || 0,
+        valorIptu: newProperty.valorIptu || 0,
+        quartos: newProperty.quartos || 0,
+        suites: newProperty.suites || 0,
+        banheiros: newProperty.banheiros || 0,
+        vagas: newProperty.vagas || 0,
+        area: newProperty.area || 0,
+        finalidade: newProperty.finalidade || "Comprar",
+        tipo: newProperty.tipo || "",
+        emDestaque: newProperty.emDestaque || false,
+        status: newProperty.status || "Ativo",
+        dataCadastro: Timestamp.now().toDate().toISOString(),
+        endereco: newProperty.endereco || {
+          rua: "",
+          numero: "",
+          bairro: "",
+          cidade: "",
+          estado: "",
+          cep: "",
+        },
+        caracteristicasImovel: newProperty.caracteristicasImovel || {},
+        caracteristicasEdificio: newProperty.caracteristicasEdificio || {
+          tipoPortaria: "Nenhuma",
+        },
+        proprietario: newProperty.proprietario || {
+          nome: "",
+          contato: "",
+          horarioContato: "",
+        },
+        fotos: newProperty.fotos || [],
+        videoUrl: newProperty.videoUrl || "",
+      };
+
+      const novoId = await criarImovelComIdSequencial(dataToSave);
+
+      alert(`Imóvel salvo com sucesso! ID: ${novoId}`);
+      router.push("/intranet/imoveis");
+    } catch (error) {
+      console.error("Erro ao salvar imóvel:", error);
+      alert("Erro ao salvar imóvel. Tente novamente.");
+    } finally {
       setIsLoading(false);
-      // Aqui, em um app real, você seria redirecionado para a página de gerenciamento
-      // router.push('/intranet/imoveis');
-    }, 1500);
+    }
   };
 
   return (
@@ -65,7 +120,6 @@ export default function AdicionarImovelPage() {
         Adicionar Novo Imóvel
       </h1>
 
-      {/* Usamos nosso componente de formulário reutilizável */}
       <PropertyForm
         property={newProperty}
         setProperty={setNewProperty}

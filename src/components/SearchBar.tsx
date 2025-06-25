@@ -3,27 +3,19 @@
 
 import { useState } from "react";
 import type { SearchFilters } from "@/types"; // 1. Importe o tipo que criamos
+import { useRouter } from "next/navigation";
 
-export function SearchBar({
-  onSearch,
-}: {
-  onSearch: (filters: SearchFilters) => void;
-}) {
-  // 2. Usamos o tipo no nosso estado para garantir consistência
-  const [filters, setFilters] = useState<SearchFilters>({
+export function SearchBar() {
+  const router = useRouter();
+
+  // 1. O estado agora é simples, com valores de texto, e não precisa do tipo complexo SearchFilters
+  const [filters, setFilters] = useState({
     finalidade: "Comprar",
-    localizacao: [],
-    tipo: [],
+    tipo: "Todos",
+    localizacao: "",
     quartos: "Todos",
-    banheiros: "Todos",
-    suites: "Todos",
-    vagas: "Todos",
     valorMin: "",
     valorMax: "",
-    areaMin: "",
-    areaMax: "",
-    caracteristicasImovel: [],
-    caracteristicasEdificio: [],
   });
 
   const handleInputChange = (
@@ -35,9 +27,21 @@ export function SearchBar({
     });
   };
 
-  const handleSearchClick = (e: React.MouseEvent<HTMLButtonElement>) => {
+  const handleSearch = (e: React.MouseEvent<HTMLButtonElement>) => {
     e.preventDefault();
-    onSearch(filters);
+    const params = new URLSearchParams();
+
+    // Adiciona os filtros à URL apenas se eles não forem o valor padrão
+    if (filters.tipo && filters.tipo !== "Todos") {
+      params.set("tipo", filters.tipo.toLowerCase()); // Agora é um texto, então usamos toLowerCase()
+    }
+    if (filters.localizacao) {
+      params.set("localizacao", filters.localizacao.toLowerCase());
+    }
+    if (filters.quartos && filters.quartos !== "Todos") {
+      params.set("quartos", filters.quartos);
+    }
+    router.push(`/comprar?${params.toString()}`);
   };
 
   return (
@@ -72,7 +76,7 @@ export function SearchBar({
             <select
               id="tipo"
               name="tipo"
-              value={filters.tipo}
+              value={filters.tipo?.[0] || "Todos"}
               onChange={handleInputChange}
               className="w-full border-gray-300 rounded-md p-3 text-gray-700 shadow-sm"
             >
@@ -152,7 +156,7 @@ export function SearchBar({
         {/* Botão de Busca */}
         <div className="mt-8 flex justify-center">
           <button
-            onClick={handleSearchClick}
+            onClick={handleSearch}
             className="w-full md:w-1/3 bg-gray-900/80 text-white font-bold py-3 px-4 rounded-md hover:bg-gray-900 transition-colors border-2 border-blue-600 text-sm tracking-wider"
           >
             BUSCAR IMÓVEIS

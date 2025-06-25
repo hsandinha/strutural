@@ -1,6 +1,7 @@
 {
   "name": "strutural-app",
   "version": "0.1.0",
+  "type": "module",
   "private": true,
   "scripts": {
     "dev": "next dev",
@@ -10,6 +11,8 @@
   },
   "dependencies": {
     "date-fns": "^4.1.0",
+    "firebase": "^11.9.1",
+    "firebase-admin": "^13.4.0",
     "geist": "^1.4.2",
     "lucide-react": "^0.515.0",
     "next": "14",

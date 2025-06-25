@@ -1,71 +1,88 @@
-// src/components/AutocompleteSearch.tsx
-"use client";
-
 import { useState, useEffect, useCallback } from "react";
-import { mockImoveis } from "@/lib/mockData";
+import { collection, getDocs } from "firebase/firestore";
+import { db } from "@/lib/firebaseConfig";
 import { Search } from "lucide-react";
 
 interface AutocompleteSearchProps {
-  // A única responsabilidade do componente é avisar quando um local é selecionado
   onSelect: (location: string) => void;
 }
 
-// Geramos as listas de locais fora do componente para melhor performance
-const allCities = [...new Set(mockImoveis.map((p) => p.endereco.cidade))];
-const allNeighborhoods = [
-  ...new Set(
-    mockImoveis.map((p) => `${p.endereco.bairro}, ${p.endereco.cidade}`)
-  ),
-];
-
 export function AutocompleteSearch({ onSelect }: AutocompleteSearchProps) {
-  // O componente agora gerencia seus próprios estados internos de busca
   const [query, setQuery] = useState("");
   const [suggestions, setSuggestions] = useState<{
     cities: string[];
     neighborhoods: string[];
-  }>({ cities: [], neighborhoods: [] });
+  }>({
+    cities: [],
+    neighborhoods: [],
+  });
   const [isFocused, setIsFocused] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
 
-  // Função que realiza a filtragem das sugestões
-  const findSuggestions = useCallback((searchQuery: string) => {
-    if (searchQuery.length < 2) {
-      setSuggestions({ cities: [], neighborhoods: [] });
-      setIsLoading(false);
-      return;
-    }
-    const lowerCaseQuery = searchQuery.toLowerCase();
-    const filteredCities = allCities.filter((city) =>
-      city.toLowerCase().includes(lowerCaseQuery)
-    );
-    const filteredNeighborhoods = allNeighborhoods.filter((n) =>
-      n.toLowerCase().includes(searchQuery.toLowerCase())
-    );
+  const [allCities, setAllCities] = useState<string[]>([]);
+  const [allNeighborhoods, setAllNeighborhoods] = useState<string[]>([]);
 
-    setSuggestions({
-      cities: filteredCities,
-      neighborhoods: filteredNeighborhoods,
-    });
-    setIsLoading(false); // Terminou de carregar
+  // Busca cidades e bairros do Firestore uma vez ao montar o componente
+  useEffect(() => {
+    async function fetchLocations() {
+      const imoveisRef = collection(db, "imoveis");
+      const snapshot = await getDocs(imoveisRef);
+      const citiesSet = new Set<string>();
+      const neighborhoodsSet = new Set<string>();
+
+      snapshot.forEach((doc) => {
+        const data = doc.data();
+        if (data.endereco?.cidade) citiesSet.add(data.endereco.cidade);
+        if (data.endereco?.bairro && data.endereco?.cidade) {
+          neighborhoodsSet.add(
+            `${data.endereco.bairro}, ${data.endereco.cidade}`
+          );
+        }
+      });
+
+      setAllCities(Array.from(citiesSet));
+      setAllNeighborhoods(Array.from(neighborhoodsSet));
+    }
+    fetchLocations();
   }, []);
 
-  // O useEffect com "debounce" para controlar a busca
+  const findSuggestions = useCallback(
+    (searchQuery: string) => {
+      if (searchQuery.length < 2) {
+        setSuggestions({ cities: [], neighborhoods: [] });
+        setIsLoading(false);
+        return;
+      }
+      const lowerCaseQuery = searchQuery.toLowerCase();
+      const filteredCities = allCities.filter((city) =>
+        city.toLowerCase().includes(lowerCaseQuery)
+      );
+      const filteredNeighborhoods = allNeighborhoods.filter((n) =>
+        n.toLowerCase().includes(lowerCaseQuery)
+      );
+
+      setSuggestions({
+        cities: filteredCities,
+        neighborhoods: filteredNeighborhoods,
+      });
+      setIsLoading(false);
+    },
+    [allCities, allNeighborhoods]
+  );
+
   useEffect(() => {
     if (query.length >= 2) {
-      setIsLoading(true); // Ativa o "Carregando..."
+      setIsLoading(true);
       const timerId = setTimeout(() => {
         findSuggestions(query);
-      }, 300); // Espera 300ms após o usuário parar de digitar
-      return () => clearTimeout(timerId); // Limpa o timer se o usuário continuar digitando
+      }, 300);
+      return () => clearTimeout(timerId);
     } else {
       setSuggestions({ cities: [], neighborhoods: [] });
     }
   }, [query, findSuggestions]);
 
-  // Função para quando o usuário seleciona uma sugestão
   const handleSelect = (selectedValue: string) => {
-    // Pega apenas o nome do bairro/cidade antes da vírgula
     const cleanValue = selectedValue.split(",")[0];
     onSelect(cleanValue);
     setQuery("");
@@ -80,22 +97,19 @@ export function AutocompleteSearch({ onSelect }: AutocompleteSearchProps) {
           value={query}
           onChange={(e) => setQuery(e.target.value)}
           onFocus={() => setIsFocused(true)}
-          onBlur={() => setTimeout(() => setIsFocused(false), 200)} // Delay para permitir o clique
+          onBlur={() => setTimeout(() => setIsFocused(false), 200)}
           placeholder="Digite um Bairro ou Cidade"
           className="w-full h-full bg-transparent focus:outline-none text-gray-700 placeholder-gray-400"
         />
         <Search className="text-gray-400 shrink-0" size={20} />
       </div>
 
-      {/* A lista de sugestões com toda a lógica de exibição */}
       {isFocused && query.length >= 2 && (
         <div className="absolute top-full left-0 w-full mt-1 bg-white border border-gray-200 rounded-md shadow-lg z-20 max-h-60 overflow-y-auto p-2">
-          {/* Mensagem de Carregando */}
           {isLoading && (
             <div className="px-4 py-2 text-sm text-gray-500">Carregando...</div>
           )}
 
-          {/* Mensagem de Nenhuma Opção Encontrada */}
           {!isLoading &&
             suggestions.cities.length === 0 &&
             suggestions.neighborhoods.length === 0 && (
@@ -104,7 +118,6 @@ export function AutocompleteSearch({ onSelect }: AutocompleteSearchProps) {
               </div>
             )}
 
-          {/* Sugestões de Cidades e Bairros */}
           {!isLoading && (
             <>
               {suggestions.cities.length > 0 && (
