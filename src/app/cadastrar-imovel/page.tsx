@@ -4,13 +4,22 @@ import { useState } from "react";
 import { Award, TrendingUp, Megaphone } from "lucide-react";
 import Link from "next/link";
 import { db } from "@/lib/firebaseConfig";
-import { collection, addDoc, Timestamp } from "firebase/firestore";
+import {
+  collection,
+  getDocs,
+  query,
+  orderBy,
+  limit,
+  setDoc,
+  doc,
+  Timestamp,
+} from "firebase/firestore";
 
 export default function CadastrarImovelPage() {
   const inputClass =
     "w-full bg-white border border-gray-200 rounded-lg h-14 px-4 text-gray-700 placeholder-gray-400 focus:outline-none focus:border-blue-400 transition";
 
-  // Estados para os campos do formulário (exemplo básico, adicione mais conforme necessário)
+  // Estados para os campos do formulário
   const [nome, setNome] = useState("");
   const [telefone, setTelefone] = useState("");
   const [email, setEmail] = useState("");
@@ -52,7 +61,24 @@ export default function CadastrarImovelPage() {
     setSubmitSuccess(false);
 
     try {
-      const docRef = await addDoc(collection(db, "imoveis"), {
+      // Buscar último documento para pegar o número sequencial
+      const captacaoRef = collection(db, "captacao");
+      const q = query(captacaoRef, orderBy("id", "desc"), limit(1));
+      const querySnapshot = await getDocs(q);
+
+      let lastNum = 0;
+      querySnapshot.forEach((doc) => {
+        const idStr = doc.data().id as string; // ex: "cap-12"
+        const num = parseInt(idStr.split("-")[1]);
+        if (!isNaN(num) && num > lastNum) lastNum = num;
+      });
+
+      const newNum = lastNum + 1;
+      const newId = `cap-${newNum.toString().padStart(2, "0")}`;
+
+      // Montar objeto para salvar
+      const dataToSave = {
+        id: newId,
         dadosPessoais: {
           nome,
           telefone,
@@ -85,10 +111,14 @@ export default function CadastrarImovelPage() {
           cidade,
         },
         criadoEm: Timestamp.now(),
-      });
+      };
+
+      // Salvar no Firestore com ID customizado
+      await setDoc(doc(db, "captacao", newId), dataToSave);
 
       setSubmitSuccess(true);
-      // Limpar formulário (opcional)
+
+      // Limpar formulário
       setNome("");
       setTelefone("");
       setEmail("");

@@ -12,6 +12,12 @@ interface ScheduleVisitModalProps {
   isOpen: boolean;
   onClose: () => void;
   propertyTitle: string;
+  onSubmit: (data: {
+    nomeCliente: string;
+    emailCliente: string;
+    telefoneCliente: string;
+    dataHora: string; // ISO string da data e hora da visita
+  }) => void | Promise<void>;
 }
 
 const availableTimes = [
@@ -42,6 +48,7 @@ export function ScheduleVisitModal({
   isOpen,
   onClose,
   propertyTitle,
+  onSubmit,
 }: ScheduleVisitModalProps) {
   // 1. NOVO ESTADO para controlar a etapa do formulário
   const [step, setStep] = useState(1);
@@ -71,7 +78,7 @@ export function ScheduleVisitModal({
     });
   };
 
-  const handleSchedule = () => {
+  const handleSchedule = async () => {
     if (
       !selectedDate ||
       !selectedTime ||
@@ -82,20 +89,35 @@ export function ScheduleVisitModal({
       return;
     }
 
-    const formattedDate = format(selectedDate, "PPP", { locale: ptBR });
-    const leadData = {
-      propertyTitle,
-      visitDate: formattedDate,
-      visitTime: selectedTime,
-      ...contactInfo,
-    };
+    // Combina data e hora em ISO string
+    const [hours, minutes] = selectedTime.split(":").map(Number);
+    const dateTime = new Date(selectedDate);
+    dateTime.setHours(hours, minutes, 0, 0);
+    const pad = (n: number) => n.toString().padStart(2, "0");
+    const dataHoraLocalISO = `${dateTime.getFullYear()}-${pad(
+      dateTime.getMonth() + 1
+    )}-${pad(dateTime.getDate())}T${pad(dateTime.getHours())}:${pad(
+      dateTime.getMinutes()
+    )}:00`;
+    console.log("Data completa com hora (ISO):", dataHoraLocalISO);
+    console.log("Dados enviados para onSubmit:", {
+      nomeCliente: contactInfo.nome,
+      emailCliente: contactInfo.email,
+      telefoneCliente: contactInfo.telefone,
+      dataHora: dataHoraLocalISO,
+    });
+    // Chama a função onSubmit com os dados
+    await onSubmit({
+      nomeCliente: contactInfo.nome,
+      emailCliente: contactInfo.email,
+      telefoneCliente: contactInfo.telefone,
+      dataHora: dataHoraLocalISO,
+    });
 
-    console.log("Novo Lead de Agendamento:", leadData);
-    alert(
-      `Sugestão de visita para "${propertyTitle}" enviada com sucesso! Um corretor entrará em contato para confirmar.`
-    );
-    onClose(); // Fecha o modal
-    setStep(1); // Reseta para a etapa 1 para a próxima vez
+    onClose();
+    setStep(1);
+    setSelectedTime(null);
+    setContactInfo({ nome: "", email: "", telefone: "" });
   };
 
   const inputClass =

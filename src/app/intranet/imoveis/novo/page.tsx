@@ -9,6 +9,8 @@ import { useRouter } from "next/navigation";
 import { Timestamp } from "firebase/firestore";
 import { criarImovelComIdSequencial } from "@/lib/firestoreUtils";
 
+import ProtectedRoute from "@/components/ProtectedRoute"; // Import do componente de proteção
+
 export default function AdicionarImovelPage() {
   const [newProperty, setNewProperty] = useState<Partial<Imovel>>({
     titulo: "",
@@ -106,26 +108,28 @@ export default function AdicionarImovelPage() {
   };
 
   return (
-    <div className="container mx-auto px-4 py-12">
-      <div className="mb-8">
-        <Link
-          href="/intranet/imoveis"
-          className="flex items-center gap-2 text-gray-500 hover:text-gray-800 transition-colors"
-        >
-          <ArrowLeftCircle size={24} />
-          Voltar para a lista de imóveis
-        </Link>
-      </div>
-      <h1 className="text-3xl font-bold text-gray-800 mb-8">
-        Adicionar Novo Imóvel
-      </h1>
+    <ProtectedRoute allowedProfiles={["admin"]}>
+      <div className="container mx-auto px-4 py-12">
+        <div className="mb-8">
+          <Link
+            href="/intranet/imoveis"
+            className="flex items-center gap-2 text-gray-500 hover:text-gray-800 transition-colors"
+          >
+            <ArrowLeftCircle size={24} />
+            Voltar para a lista de imóveis
+          </Link>
+        </div>
+        <h1 className="text-3xl font-bold text-gray-800 mb-8">
+          Adicionar Novo Imóvel
+        </h1>
 
-      <PropertyForm
-        property={newProperty}
-        setProperty={setNewProperty}
-        onSubmit={handleSubmit}
-        isLoading={isLoading}
-      />
-    </div>
+        <PropertyForm
+          property={newProperty}
+          setProperty={setNewProperty}
+          onSubmit={handleSubmit}
+          isLoading={isLoading}
+        />
+      </div>
+    </ProtectedRoute>
   );
 }

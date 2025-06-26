@@ -1,8 +1,89 @@
-// src/app/contato/page.tsx
+"use client";
+
+import { useState } from "react";
+import {
+  collection,
+  getDocs,
+  query,
+  orderBy,
+  limit,
+  setDoc,
+  doc,
+} from "firebase/firestore";
+import { db } from "@/lib/firebaseConfig";
 
 export default function ContatoPage() {
   const inputClass =
     "w-full bg-white border border-gray-200 rounded-lg h-14 px-4 text-gray-700 placeholder-gray-400 focus:outline-none focus:border-blue-400 transition";
+
+  // Estados para os campos do formulário
+  const [nome, setNome] = useState("");
+  const [email, setEmail] = useState("");
+  const [telefone, setTelefone] = useState("");
+  const [mensagem, setMensagem] = useState("");
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+
+    if (!nome || !email) {
+      alert("Por favor, preencha os campos obrigatórios: nome e email.");
+      return;
+    }
+
+    setIsSubmitting(true);
+
+    try {
+      // Buscar último lead para pegar o número sequencial
+      const leadsRef = collection(db, "leads");
+      const q = query(leadsRef, orderBy("id", "desc"), limit(1));
+      const querySnapshot = await getDocs(q);
+
+      let lastNum = 0;
+      querySnapshot.forEach((doc) => {
+        const idStr = doc.data().id as string; // ex: "lead-12"
+        const num = parseInt(idStr.split("-")[1]);
+        if (!isNaN(num) && num > lastNum) lastNum = num;
+      });
+
+      const newNum = lastNum + 1;
+      const newId = `lead-${newNum}`;
+
+      // Data atual no formato YYYY-MM-DD
+      const now = new Date();
+      const dataCriacao = now.toISOString().split("T")[0];
+
+      // Montar objeto para salvar
+      const leadData = {
+        contato: email,
+        corretorAtribuido: "Hebert",
+        dataCriacao,
+        id: newId,
+        interesse: "Contato geral", // ou personalize conforme desejar
+        nome,
+        origem: "Site - Página Contato",
+        status: "Qualificado",
+        telefone,
+        mensagem,
+      };
+
+      // Salvar no Firestore
+      await setDoc(doc(db, "leads", newId), leadData);
+
+      alert("Mensagem enviada com sucesso! Entraremos em contato em breve.");
+
+      // Limpar formulário
+      setNome("");
+      setEmail("");
+      setTelefone("");
+      setMensagem("");
+    } catch (error) {
+      console.error("Erro ao enviar mensagem:", error);
+      alert("Erro ao enviar mensagem. Tente novamente mais tarde.");
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
 
   return (
     <main className="bg-gray-50 min-h-screen">
@@ -65,7 +146,7 @@ export default function ContatoPage() {
             {/* Lado direito: Formulário */}
             <div>
               <div className="bg-white p-8 rounded-2xl shadow-md">
-                <form>
+                <form onSubmit={handleSubmit}>
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
                     <div>
                       <label
@@ -79,6 +160,9 @@ export default function ContatoPage() {
                         id="nome"
                         placeholder="Seu nome"
                         className={inputClass}
+                        value={nome}
+                        onChange={(e) => setNome(e.target.value)}
+                        required
                       />
                     </div>
                     <div>
@@ -93,6 +177,9 @@ export default function ContatoPage() {
                         id="email"
                         placeholder="Seu e-mail"
                         className={inputClass}
+                        value={email}
+                        onChange={(e) => setEmail(e.target.value)}
+                        required
                       />
                     </div>
                   </div>
@@ -108,6 +195,8 @@ export default function ContatoPage() {
                       id="telefone"
                       placeholder="(00) 00000-0000"
                       className={inputClass}
+                      value={telefone}
+                      onChange={(e) => setTelefone(e.target.value)}
                     />
                   </div>
                   <div className="mb-6">
@@ -122,14 +211,17 @@ export default function ContatoPage() {
                       rows={5}
                       placeholder="Digite sua mensagem"
                       className="w-full bg-white border border-gray-200 rounded-lg px-4 py-3 text-gray-700 placeholder-gray-400 focus:outline-none focus:border-blue-400 transition resize-none"
+                      value={mensagem}
+                      onChange={(e) => setMensagem(e.target.value)}
                     ></textarea>
                   </div>
                   <div>
                     <button
                       type="submit"
+                      disabled={isSubmitting}
                       className="w-full bg-blue-600 text-white font-bold py-4 px-4 rounded-xl shadow-lg hover:bg-blue-700 transition-colors text-lg tracking-wider"
                     >
-                      Enviar Mensagem
+                      {isSubmitting ? "Enviando..." : "Enviar Mensagem"}
                     </button>
                   </div>
                 </form>

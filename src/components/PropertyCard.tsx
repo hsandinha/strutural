@@ -1,18 +1,29 @@
-// src/components/PropertyCard.tsx
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Imovel } from "@/types";
 import Image from "next/image";
 import Link from "next/link";
 import { Heart, Bed, Bath, Scan } from "lucide-react";
-
-// --- Imports do Swiper ---
+import { useRouter } from "next/navigation";
 import { Swiper, SwiperSlide } from "swiper/react";
 import { Navigation, Pagination } from "swiper/modules";
 import "swiper/css";
 import "swiper/css/navigation";
 import "swiper/css/pagination";
+
+import { getAuth, onAuthStateChanged } from "firebase/auth";
+import {
+  collection,
+  query,
+  where,
+  getDocs,
+  addDoc,
+  deleteDoc,
+  doc,
+  getDoc,
+} from "firebase/firestore";
+import { db } from "@/lib/firebaseConfig";
 
 interface PropertyCardProps {
   imovel: Imovel;
@@ -27,30 +38,136 @@ const formatPrice = (price: number) => {
 };
 
 export function PropertyCard({ imovel }: PropertyCardProps) {
-  // Estado para controlar se o carrossel deve ser exibido
   const [isHovered, setIsHovered] = useState(false);
+  const [userId, setUserId] = useState<string | null>(null);
+  const [userPerfil, setUserPerfil] = useState<string | null>(null);
+  const [isFavorited, setIsFavorited] = useState(false);
+  const [loadingFavorite, setLoadingFavorite] = useState(false);
+  const router = useRouter();
+
+  // Observar usuário logado e buscar perfil
+  useEffect(() => {
+    const auth = getAuth();
+    const unsubscribe = onAuthStateChanged(auth, async (user) => {
+      if (user) {
+        setUserId(user.uid);
+        // Buscar perfil do usuário
+        const userDoc = await getDoc(doc(db, "users", user.uid));
+        if (userDoc.exists()) {
+          setUserPerfil(userDoc.data().perfil || null);
+        } else {
+          setUserPerfil(null);
+        }
+      } else {
+        setUserId(null);
+        setUserPerfil(null);
+        setIsFavorited(false);
+      }
+    });
+    return () => unsubscribe();
+  }, []);
+
+  // Verificar se imóvel está favoritado pelo usuário (somente se perfil for cliente)
+  useEffect(() => {
+    if (!userId || !userPerfil) return;
+    if (userPerfil === "admin" || userPerfil === "corretor") {
+      setIsFavorited(false);
+      return;
+    }
+
+    async function checkFavorite() {
+      const favoritosRef = collection(db, "favoritos");
+      const q = query(
+        favoritosRef,
+        where("userId", "==", userId),
+        where("imovelId", "==", imovel.id)
+      );
+      const snapshot = await getDocs(q);
+      setIsFavorited(!snapshot.empty);
+    }
+
+    checkFavorite();
+  }, [userId, userPerfil, imovel.id]);
+
+  // Função para favoritar/desfavoritar
+  const toggleFavorite = async () => {
+    if (!userId) {
+      alert("Você precisa estar logado para favoritar imóveis.");
+      router.push("/login");
+      return;
+    }
+    if (userPerfil === "admin" || userPerfil === "corretor") {
+      alert("Administradores e corretores não podem favoritar imóveis.");
+      return;
+    }
+    setLoadingFavorite(true);
+
+    try {
+      const favoritosRef = collection(db, "favoritos");
+      const q = query(
+        favoritosRef,
+        where("userId", "==", userId),
+        where("imovelId", "==", imovel.id)
+      );
+      const snapshot = await getDocs(q);
+
+      if (snapshot.empty) {
+        // Adicionar favorito
+        await addDoc(favoritosRef, {
+          userId,
+          imovelId: imovel.id,
+          criadoEm: new Date(),
+        });
+        setIsFavorited(true);
+      } else {
+        // Remover favorito
+        const batchDeletes = snapshot.docs.map((docSnap) =>
+          deleteDoc(doc(db, "favoritos", docSnap.id))
+        );
+        await Promise.all(batchDeletes);
+        setIsFavorited(false);
+      }
+    } catch (error) {
+      console.error("Erro ao atualizar favorito:", error);
+      alert("Erro ao atualizar favorito. Tente novamente.");
+    } finally {
+      setLoadingFavorite(false);
+    }
+  };
 
   return (
     <div
       className="border rounded-lg overflow-hidden shadow-md hover:shadow-xl transition-all duration-300 h-full flex flex-col group"
-      // Eventos para ativar o carrossel ao passar o mouse
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
     >
       <div className="relative w-full h-56">
-        <button className="absolute top-3 right-3 z-10 bg-white/70 backdrop-blur-sm p-2 rounded-full hover:bg-white transition-colors">
-          <Heart size={20} className="text-gray-600" />
+        <button
+          onClick={toggleFavorite}
+          disabled={loadingFavorite}
+          className="absolute top-3 right-3 z-10 bg-white/70 backdrop-blur-sm p-2 rounded-full hover:bg-white transition-colors"
+          aria-label={
+            isFavorited ? "Remover dos favoritos" : "Adicionar aos favoritos"
+          }
+          title={
+            isFavorited ? "Remover dos favoritos" : "Adicionar aos favoritos"
+          }
+          type="button"
+        >
+          <Heart
+            size={20}
+            className={isFavorited ? "text-red-500" : "text-gray-600"}
+            fill={isFavorited ? "currentColor" : "none"}
+          />
         </button>
 
         {isHovered && imovel.fotos.length > 1 ? (
-          // --- Renderiza o CARROSSEL quando o mouse está sobre o card ---
           <Swiper
             modules={[Navigation, Pagination]}
             navigation
             pagination={{ clickable: true }}
             loop={true}
             className="h-full w-full"
-            // Estilos customizados para os botões e paginação do Swiper
             style={
               {
                 "--swiper-navigation-color": "#fff",
@@ -77,7 +194,6 @@ export function PropertyCard({ imovel }: PropertyCardProps) {
             ))}
           </Swiper>
         ) : (
-          // --- Renderiza uma IMAGEM ESTÁTICA por padrão ---
           <Link href={`/imoveis/${imovel.id}`} className="block h-full w-full">
             <Image
               src={imovel.fotos[0]}

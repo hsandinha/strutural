@@ -1,13 +1,13 @@
-// src/app/intranet/visitas/agendar/page.tsx
 "use client";
 
 import { useState, useEffect, Suspense } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
-import { mockImoveis } from "@/lib/mockData";
 import { ArrowLeftCircle } from "lucide-react";
 import { Visita } from "@/types";
-import { VisitForm } from "@/components/intranet/VisitForm"; // Importe o novo formulário
+import { VisitForm } from "@/components/intranet/VisitForm";
+import { db } from "@/lib/firebaseConfig";
+import { collection, addDoc, getDoc, doc, getDocs } from "firebase/firestore";
 
 function AgendarVisitaPageContent() {
   const router = useRouter();
@@ -15,61 +15,130 @@ function AgendarVisitaPageContent() {
   const [novaVisita, setNovaVisita] = useState<Partial<Visita>>({
     status: "Agendada",
   });
+  const [imoveis, setImoveis] = useState<{ id: string; titulo: string }[]>([]);
+  const [corretores, setCorretores] = useState<{ id: string; nome: string }[]>(
+    []
+  );
   const [isLoading, setIsLoading] = useState(false);
+  const [loadingData, setLoadingData] = useState(true);
+  const [errorMessage, setErrorMessage] = useState("");
   const returnTo = searchParams.get("returnTo") || "/intranet/visitas";
+
   useEffect(() => {
-    // Lê todos os parâmetros relevantes da URL
     const nomeCliente = searchParams.get("nomeCliente");
     const telefoneCliente = searchParams.get("telefoneCliente");
     const imovelId = searchParams.get("imovelId");
 
-    // Cria um objeto apenas com os dados que vieram da URL
     const initialStateFromUrl: Partial<Visita> = {};
     if (nomeCliente) initialStateFromUrl.nomeCliente = nomeCliente;
     if (telefoneCliente) initialStateFromUrl.telefoneCliente = telefoneCliente;
     if (imovelId) initialStateFromUrl.imovelId = imovelId;
 
-    // Atualiza o estado da visita com os dados pré-preenchidos
-    // Usamos uma função no set para garantir que pegamos o estado anterior corretamente
     if (Object.keys(initialStateFromUrl).length > 0) {
       setNovaVisita((prev) => ({ ...prev, ...initialStateFromUrl }));
     }
   }, [searchParams]);
 
-  const handleSubmit = (e: React.FormEvent) => {
-    // 1. Previne o comportamento padrão do formulário, que é recarregar a página.
-    e.preventDefault();
+  useEffect(() => {
+    async function fetchData() {
+      try {
+        // Buscar imóveis
+        const imoveisRef = collection(db, "imoveis");
+        const imoveisSnap = await getDocs(imoveisRef);
+        const imoveisData = imoveisSnap.docs
+          .map((doc) => {
+            const data = doc.data() as { titulo?: string };
+            if (!data.titulo) return null;
+            return { id: doc.id, titulo: data.titulo };
+          })
+          .filter(
+            (imovel): imovel is { id: string; titulo: string } =>
+              imovel !== null
+          );
+        setImoveis(imoveisData);
 
-    // 2. Ativa o estado de carregamento para dar feedback ao usuário (ex: desabilitar o botão).
+        // Buscar corretores
+        const corretoresRef = collection(db, "users");
+        const corretoresSnap = await getDocs(corretoresRef);
+        const corretoresData = corretoresSnap.docs
+          .map((doc) => {
+            const data = doc.data() as { nome?: string; perfil?: string };
+            if (data.perfil === "corretor" && data.nome) {
+              return { id: doc.id, nome: data.nome };
+            }
+            return null;
+          })
+          .filter(
+            (corretor): corretor is { id: string; nome: string } =>
+              corretor !== null
+          );
+        setCorretores(corretoresData);
+      } catch (error) {
+        console.error("Erro ao carregar dados:", error);
+        setErrorMessage("Erro ao carregar dados. Tente novamente.");
+      } finally {
+        setLoadingData(false);
+      }
+    }
+    fetchData();
+  }, []);
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setErrorMessage("");
     setIsLoading(true);
 
-    // 3. Adiciona informações que não estão no formulário, mas são necessárias para o objeto 'Visita'.
-    const imovelSelecionado = mockImoveis.find(
-      (i) => i.id === novaVisita.imovelId
-    );
+    try {
+      if (!novaVisita.imovelId) {
+        setErrorMessage("Por favor, selecione um imóvel.");
+        setIsLoading(false);
+        return;
+      }
 
-    const dadosCompletosParaSalvar = {
-      ...novaVisita,
-      id: `vis-${new Date().getTime()}`, // Gera um ID de exemplo, já que não temos um banco real.
-      imovelTitulo: imovelSelecionado?.titulo || "Título não encontrado",
-      imovelFoto: imovelSelecionado?.fotos[0] || "/imovel-placeholder.png",
-    };
+      // Buscar imóvel no Firestore pelo ID
+      const imovelDocRef = doc(db, "imoveis", novaVisita.imovelId);
+      const imovelDocSnap = await getDoc(imovelDocRef);
 
-    // 4. Exibe os dados finais no console do navegador para você poder depurar e ver se está tudo certo.
-    console.log(
-      "Agendando nova visita (dados completos):",
-      dadosCompletosParaSalvar
-    );
+      if (!imovelDocSnap.exists()) {
+        setErrorMessage("Imóvel selecionado não encontrado.");
+        setIsLoading(false);
+        return;
+      }
 
-    // --- SIMULAÇÃO DE UMA CHAMADA DE API PARA SALVAR NO BANCO DE DADOS ---
-    // Em um app real, aqui você faria um `fetch` para sua API que salvaria no Firebase.
-    // O setTimeout simula o tempo que a internet levaria para responder.
-    setTimeout(() => {
-      alert("Visita agendada com sucesso! (Isto é uma simulação)");
-      setIsLoading(false);
+      const imovelData = imovelDocSnap.data();
+
+      // Preparar dados completos para salvar
+      const dadosCompletosParaSalvar = {
+        ...novaVisita,
+        imovelTitulo: imovelData.titulo || "Título não encontrado",
+        imovelFoto:
+          (imovelData.fotos && imovelData.fotos[0]) ||
+          "/imovel-placeholder.png",
+        status: novaVisita.status || "Agendada",
+        criadoEm: new Date(),
+      };
+
+      // Salvar no Firestore
+      const visitasRef = collection(db, "visitas");
+      await addDoc(visitasRef, dadosCompletosParaSalvar);
+
+      alert("Visita agendada com sucesso!");
       router.push(returnTo);
-    }, 1500);
+    } catch (error) {
+      console.error("Erro ao agendar visita:", error);
+      setErrorMessage("Erro ao agendar visita. Tente novamente.");
+    } finally {
+      setIsLoading(false);
+    }
   };
+
+  if (loadingData) {
+    return (
+      <div className="text-center p-10">
+        Carregando dados para agendamento...
+      </div>
+    );
+  }
 
   return (
     <div className="container mx-auto px-4 py-12">
@@ -88,21 +157,25 @@ function AgendarVisitaPageContent() {
         Agendar Nova Visita
       </h1>
 
-      {/* Usamos nosso novo componente de formulário reutilizável */}
+      {errorMessage && (
+        <p className="mb-4 text-red-600 font-semibold">{errorMessage}</p>
+      )}
+
       <VisitForm
         visita={novaVisita}
         setVisita={setNovaVisita}
         onSubmit={handleSubmit}
         isLoading={isLoading}
         buttonText="Confirmar Agendamento"
+        imoveis={imoveis}
+        corretores={corretores}
       />
     </div>
   );
 }
-
 export default function AgendarVisitaPage() {
   return (
-    <Suspense>
+    <Suspense fallback={<div className="text-center p-10">Carregando...</div>}>
       <AgendarVisitaPageContent />
     </Suspense>
   );

@@ -1,4 +1,3 @@
-// src/components/intranet/LembreteForm.tsx
 "use client";
 
 import { Lembrete } from "@/types";
@@ -10,6 +9,8 @@ interface LembreteFormProps {
   onSubmit: (e: React.FormEvent) => void;
   isLoading: boolean;
   buttonText: string;
+  errorMessage?: string; // adiciona prop opcional para erro
+  successMessage?: string; // adiciona prop opcional para sucesso
 }
 
 export function LembreteForm({
@@ -18,6 +19,8 @@ export function LembreteForm({
   onSubmit,
   isLoading,
   buttonText,
+  errorMessage,
+  successMessage,
 }: LembreteFormProps) {
   const handleChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
@@ -78,6 +81,14 @@ export function LembreteForm({
           </div>
         </div>
       </fieldset>
+
+      {/* Mensagens de erro e sucesso */}
+      {errorMessage && (
+        <p className="text-red-600 text-sm mt-2">{errorMessage}</p>
+      )}
+      {successMessage && (
+        <p className="text-green-600 text-sm mt-2">{successMessage}</p>
+      )}
 
       <div className="pt-4 border-t">
         <button

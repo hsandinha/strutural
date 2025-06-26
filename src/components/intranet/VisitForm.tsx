@@ -1,17 +1,15 @@
-// src/components/intranet/VisitForm.tsx
 "use client";
 
 import { Visita } from "@/types";
-import { mockImoveis } from "@/lib/mockData";
-import { mockCorretores } from "@/lib/mockCorretores";
 
-// Definimos as propriedades que o formulário vai receber
 interface VisitFormProps {
   visita: Partial<Visita>;
   setVisita: React.Dispatch<React.SetStateAction<Partial<Visita>>>;
   onSubmit: (e: React.FormEvent) => void;
   isLoading: boolean;
   buttonText: string;
+  imoveis: { id: string; titulo: string; fotos?: string[] }[]; // lista de imóveis
+  corretores: { id: string; nome: string }[]; // lista de corretores
 }
 
 export function VisitForm({
@@ -20,6 +18,8 @@ export function VisitForm({
   onSubmit,
   isLoading,
   buttonText,
+  imoveis,
+  corretores,
 }: VisitFormProps) {
   const handleChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
@@ -61,7 +61,7 @@ export function VisitForm({
               <option value="" disabled>
                 Selecione o imóvel
               </option>
-              {mockImoveis.map((imovel) => (
+              {imoveis.map((imovel) => (
                 <option key={imovel.id} value={imovel.id}>
                   Cód: {imovel.id} - {imovel.titulo}
                 </option>
@@ -153,7 +153,7 @@ export function VisitForm({
               <option value="" disabled>
                 Selecione um corretor
               </option>
-              {mockCorretores.map((corretor) => (
+              {corretores.map((corretor) => (
                 <option key={corretor.id} value={corretor.nome}>
                   {corretor.nome}
                 </option>

@@ -1,13 +1,13 @@
 "use client";
 
-import { Imovel, SearchFilters } from "@/types";
+import { Imovel } from "@/types";
 import { useState } from "react";
 import { getStorage, ref, uploadBytes, getDownloadURL } from "firebase/storage";
 
 interface PropertyFormProps {
   property: Partial<Imovel>;
   setProperty: React.Dispatch<React.SetStateAction<Partial<Imovel>>>;
-  onSubmit: (e: React.FormEvent) => void;
+  onSubmit: (e: React.FormEvent) => Promise<void>;
   isLoading: boolean;
 }
 
@@ -20,6 +20,10 @@ export function PropertyForm({
   const [isEnderecoAutoPreenchido, setIsEnderecoAutoPreenchido] =
     useState(false);
   const [cepError, setCepError] = useState<string | null>(null);
+
+  // Estado para arquivos selecionados localmente (antes do upload)
+  const [selectedFiles, setSelectedFiles] = useState<File[]>([]);
+  // Estado para controlar upload em andamento
   const [uploading, setUploading] = useState(false);
 
   const storage = getStorage();
@@ -43,7 +47,6 @@ export function PropertyForm({
         return;
       }
 
-      // Garante que prev.endereco existe e que todas as propriedades obrigatórias são strings
       setProperty((prev: Partial<Imovel>) => ({
         ...prev,
         endereco: {
@@ -87,26 +90,60 @@ export function PropertyForm({
     }
   };
 
-  // Upload das fotos para Firebase Storage
-  const handleFotosChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+  // Quando o usuário seleciona arquivos, só atualiza o estado local
+  function handleFotosChange(e: React.ChangeEvent<HTMLInputElement>) {
     if (!e.target.files) return;
-    setUploading(true);
-    const filesArray = Array.from(e.target.files);
-    const uploadedUrls: string[] = [];
+    const arquivos = Array.from(e.target.files);
+    setSelectedFiles((prev) => [...prev, ...arquivos]);
+  }
 
-    for (const file of filesArray) {
-      const storageRef = ref(storage, `imoveis/${Date.now()}_${file.name}`);
-      await uploadBytes(storageRef, file);
-      const url = await getDownloadURL(storageRef);
-      uploadedUrls.push(url);
-    }
+  // Remove arquivo selecionado localmente
+  function removerArquivoSelecionado(index: number) {
+    setSelectedFiles((prev) => prev.filter((_, i) => i !== index));
+  }
 
+  // Remove foto já salva (URL)
+  function removerFotoSalva(index: number) {
     setProperty({
       ...property,
-      fotos: [...(property.fotos || []), ...uploadedUrls],
+      fotos: (property.fotos || []).filter((_, i) => i !== index),
     });
-    setUploading(false);
-  };
+  }
+
+  // Upload dos arquivos selecionados para Firebase Storage
+  async function fazerUploadDasFotosSelecionadas() {
+    setUploading(true);
+    try {
+      const urls: string[] = [];
+      for (const arquivo of selectedFiles) {
+        const storageRef = ref(
+          storage,
+          `imoveis/${Date.now()}_${arquivo.name}`
+        );
+        await uploadBytes(storageRef, arquivo);
+        const url = await getDownloadURL(storageRef);
+        urls.push(url);
+      }
+      setProperty({
+        ...property,
+        fotos: [...(property.fotos || []), ...urls],
+      });
+      setSelectedFiles([]);
+    } catch (error) {
+      console.error("Erro no upload das fotos:", error);
+    } finally {
+      setUploading(false);
+    }
+  }
+
+  // Submit do formulário: faz upload das fotos e depois chama onSubmit
+  async function handleSubmit(e: React.FormEvent) {
+    e.preventDefault();
+    if (selectedFiles.length > 0) {
+      await fazerUploadDasFotosSelecionadas();
+    }
+    await onSubmit(e);
+  }
 
   // Handler genérico para campos simples
   const handleChange = (
@@ -115,7 +152,13 @@ export function PropertyForm({
     >
   ) => {
     const { name, value } = e.target;
-    setProperty({ ...property, [name]: value });
+
+    // Verifica se é input do tipo checkbox para acessar checked
+    if (e.target instanceof HTMLInputElement && e.target.type === "checkbox") {
+      setProperty({ ...property, [name]: e.target.checked });
+    } else {
+      setProperty({ ...property, [name]: value });
+    }
   };
 
   // Handler para campos aninhados (endereco, proprietario)
@@ -210,7 +253,7 @@ export function PropertyForm({
 
   return (
     <form
-      onSubmit={onSubmit}
+      onSubmit={handleSubmit}
       className="bg-white rounded-lg shadow-md border p-8 space-y-8"
     >
       {/* Endereço */}
@@ -620,7 +663,7 @@ export function PropertyForm({
           </div>
         </div>
       </fieldset>
-      {/* Upload múltiplo de fotos e url do video*/}
+      {/* Upload múltiplo de fotos */}
       <fieldset>
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-2">
@@ -637,33 +680,61 @@ export function PropertyForm({
           {uploading && (
             <p className="text-blue-600 mt-2">Fazendo upload das fotos...</p>
           )}
-          <div className="mt-2 flex flex-wrap gap-2">
-            {(property.fotos || []).map((foto, idx) => (
-              <div
-                key={idx}
-                className="relative w-20 h-16 rounded-md overflow-hidden"
-              >
-                <img
-                  src={foto}
-                  alt={`Foto ${idx + 1}`}
-                  className="w-full h-full object-cover"
-                />
-                <button
-                  type="button"
-                  onClick={() => {
-                    const fotosAtualizadas = (property.fotos || []).filter(
-                      (_, i) => i !== idx
-                    );
-                    setProperty({ ...property, fotos: fotosAtualizadas });
-                  }}
-                  className="absolute top-0 right-0 bg-black bg-opacity-50 text-white rounded-bl-md px-1.5 py-0.5 text-xs font-bold hover:bg-opacity-75 transition"
-                  aria-label={`Remover foto ${idx + 1}`}
+
+          {/* Previews das fotos selecionadas */}
+          {selectedFiles.length > 0 && (
+            <div className="mt-2 flex flex-wrap gap-2">
+              {selectedFiles.map((file, idx) => (
+                <div
+                  key={idx}
+                  className="relative w-20 h-16 rounded-md overflow-hidden border border-gray-300"
                 >
-                  ×
-                </button>
+                  <img
+                    src={URL.createObjectURL(file)}
+                    alt={`Preview da foto ${idx + 1}`}
+                    className="w-full h-full object-cover"
+                  />
+                  <button
+                    type="button"
+                    onClick={() => removerArquivoSelecionado(idx)}
+                    className="absolute top-0 right-0 bg-black bg-opacity-50 text-white rounded-bl-md px-1.5 py-0.5 text-xs font-bold hover:bg-opacity-75 transition"
+                    aria-label={`Remover foto ${idx + 1}`}
+                  >
+                    ×
+                  </button>
+                </div>
+              ))}
+            </div>
+          )}
+
+          {/* Fotos já salvas */}
+          {(property.fotos || []).length > 0 && (
+            <>
+              <p className="mt-4 font-semibold">Fotos já salvas:</p>
+              <div className="mt-2 flex flex-wrap gap-2">
+                {(property.fotos || []).map((foto, idx) => (
+                  <div
+                    key={idx}
+                    className="relative w-20 h-16 rounded-md overflow-hidden border border-gray-300"
+                  >
+                    <img
+                      src={foto}
+                      alt={`Foto salva ${idx + 1}`}
+                      className="w-full h-full object-cover"
+                    />
+                    <button
+                      type="button"
+                      onClick={() => removerFotoSalva(idx)}
+                      className="absolute top-0 right-0 bg-black bg-opacity-50 text-white rounded-bl-md px-1.5 py-0.5 text-xs font-bold hover:bg-opacity-75 transition"
+                      aria-label={`Remover foto salva ${idx + 1}`}
+                    >
+                      ×
+                    </button>
+                  </div>
+                ))}
               </div>
-            ))}
-          </div>
+            </>
+          )}
         </div>
         {/* Video URL */}
         <div>
@@ -680,13 +751,14 @@ export function PropertyForm({
           />
         </div>
       </fieldset>
+      {/* Botão salvar */}
       <div className="pt-6 border-t">
         <button
           type="submit"
           disabled={isLoading || uploading}
           className="w-full bg-blue-600 text-white font-bold py-3 rounded-lg hover:bg-blue-700 transition-colors"
         >
-          {isLoading ? "Salvando..." : "Salvar Imóvel"}
+          {isLoading || uploading ? "Salvando..." : "Salvar Imóvel"}
         </button>
       </div>
     </form>

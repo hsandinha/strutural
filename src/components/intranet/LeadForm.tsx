@@ -1,16 +1,16 @@
-// src/components/intranet/LeadForm.tsx
 "use client";
 
 import { Lead } from "@/types";
-import { mockCorretores } from "@/lib/mockCorretores";
 
-// Definimos as propriedades que o formulário vai receber
 interface LeadFormProps {
   lead: Partial<Lead>;
   setLead: React.Dispatch<React.SetStateAction<Partial<Lead>>>;
   onSubmit: (e: React.FormEvent) => void;
   isLoading: boolean;
   buttonText: string;
+  corretores: { id: string; nome: string }[];
+  errorMessage?: string;
+  successMessage?: string;
 }
 
 export function LeadForm({
@@ -19,6 +19,9 @@ export function LeadForm({
   onSubmit,
   isLoading,
   buttonText,
+  corretores,
+  errorMessage,
+  successMessage,
 }: LeadFormProps) {
   const handleChange = (
     e: React.ChangeEvent<
@@ -155,7 +158,7 @@ export function LeadForm({
               className={inputClass}
             >
               <option value="">Nenhum</option>
-              {mockCorretores.map((corretor) => (
+              {corretores.map((corretor) => (
                 <option key={corretor.id} value={corretor.nome}>
                   {corretor.nome}
                 </option>
@@ -164,6 +167,13 @@ export function LeadForm({
           </div>
         </div>
       </fieldset>
+
+      {errorMessage && (
+        <p className="text-red-600 font-semibold mt-2">{errorMessage}</p>
+      )}
+      {successMessage && (
+        <p className="text-green-600 font-semibold mt-2">{successMessage}</p>
+      )}
 
       <div className="pt-4 border-t">
         <button

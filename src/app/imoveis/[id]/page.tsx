@@ -18,7 +18,16 @@ import {
   X,
 } from "lucide-react";
 import { PropertyMediaGallery } from "@/components/PropertyMediaGallery";
-import { doc, getDoc } from "firebase/firestore";
+import {
+  doc,
+  getDoc,
+  collection,
+  getDocs,
+  query,
+  orderBy,
+  limit,
+  setDoc,
+} from "firebase/firestore";
 import { db } from "@/lib/firebaseConfig";
 
 const formatPrice = (price: number) => {
@@ -108,10 +117,104 @@ export default function PropertyDetailsPage() {
     }
   }, [isContactModalOpen, imovel]);
 
-  const handleContactSubmit = (e: React.FormEvent) => {
+  const handleContactSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsSubmitting(true);
-    // Aqui você pode implementar o envio do contato
+
+    try {
+      // 1. Buscar o último lead para pegar o número sequencial
+      const leadsRef = collection(db, "leads");
+      const q = query(leadsRef, orderBy("id", "desc"), limit(1));
+      const querySnapshot = await getDocs(q);
+
+      let lastNum = 0;
+      querySnapshot.forEach((doc) => {
+        const idStr = doc.data().id as string; // ex: "lead-12"
+        const num = parseInt(idStr.split("-")[1]);
+        if (!isNaN(num) && num > lastNum) lastNum = num;
+      });
+
+      const newNum = lastNum + 1;
+      const newId = `lead-${newNum}`;
+
+      // 2. Formatar data atual como string "YYYY-MM-DD"
+      const now = new Date();
+      const dataCriacao = now.toISOString().split("T")[0];
+
+      // 3. Montar o objeto para salvar
+      const contatoData = {
+        contato: contactEmail,
+        corretorAtribuido: "Hebert",
+        dataCriacao,
+        id: newId,
+        interesse: imovel ? imovel.titulo : "Interesse não especificado",
+        nome: contactName,
+        origem: "Portal Imobiliário",
+        status: "Qualificado",
+      };
+
+      // 4. Salvar no Firestore com o ID customizado
+      await setDoc(doc(db, "leads", newId), contatoData);
+
+      alert("Contato salvo com sucesso!");
+      // Limpar formulário e fechar modal
+      setContactName("");
+      setContactEmail("");
+      setContactPhone("");
+      setContactMessage("");
+      setIsContactModalOpen(false);
+    } catch (error) {
+      console.error("Erro ao salvar contato:", error);
+      alert("Erro ao salvar contato. Tente novamente.");
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
+  const handleVisitSubmit = async (data: {
+    nomeCliente: string;
+    emailCliente: string;
+    telefoneCliente: string;
+    dataHora: string;
+  }) => {
+    setIsSubmitting(true);
+    try {
+      const visitasRef = collection(db, "visitas");
+      const q = query(visitasRef, orderBy("id", "desc"), limit(1));
+      const querySnapshot = await getDocs(q);
+
+      let lastNum = 0;
+      querySnapshot.forEach((doc) => {
+        const idStr = doc.data().id as string; // ex: "vis-12"
+        const num = parseInt(idStr.split("-")[1]);
+        if (!isNaN(num) && num > lastNum) lastNum = num;
+      });
+
+      const newNum = lastNum + 1;
+      const newId = `vis-${newNum.toString().padStart(2, "0")}`;
+
+      const visitaData = {
+        corretorResponsavel: "Hebert",
+        data: data.dataHora,
+        id: newId,
+        imovelFoto: imovel?.fotos?.[0] || "/imoveis/default.jpg",
+        imovelId: imovel?.id || "",
+        imovelTitulo: imovel?.titulo || "",
+        nomeCliente: data.nomeCliente,
+        status: "Confirmada",
+        telefoneCliente: data.telefoneCliente,
+      };
+
+      await setDoc(doc(db, "visitas", newId), visitaData);
+
+      alert("Visita agendada com sucesso!");
+      setIsVisitModalOpen(false);
+    } catch (error) {
+      console.error("Erro ao salvar visita:", error);
+      alert("Erro ao agendar visita. Tente novamente.");
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   if (!imovel) {
@@ -367,6 +470,7 @@ export default function PropertyDetailsPage() {
         isOpen={isVisitModalOpen}
         onClose={() => setIsVisitModalOpen(false)}
         propertyTitle={imovel.titulo}
+        onSubmit={handleVisitSubmit}
       />
     </>
   );

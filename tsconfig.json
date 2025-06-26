@@ -1,14 +1,14 @@
 {
   "compilerOptions": {
-    "target": "ES2017", // Alvo mais moderno para resolver os erros de 'private identifiers'
+    "target": "ES2017",
     "lib": ["dom", "dom.iterable", "esnext"],
     "allowJs": true,
-    "skipLibCheck": true, // Ignora erros de tipo dentro de node_modules
+    "skipLibCheck": true,
     "strict": true,
     "noEmit": true,
-    "esModuleInterop": true, // Resolve o problema de importação do 'firebase-admin'
+    "esModuleInterop": true,
     "module": "esnext",
-    "moduleResolution": "node",
+    "moduleResolution": "bundler",
     "resolveJsonModule": true,
     "isolatedModules": true,
     "jsx": "preserve",
@@ -23,5 +23,5 @@
     }
   },
   "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", ".next/types/**/*.ts"],
-  "exclude": ["node_modules"]
+  "exclude": ["node_modules", "seed.js"]
 }
