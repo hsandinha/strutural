@@ -95,7 +95,9 @@ export default function EditarImovelPage() {
 
   if (!propertyData) {
     return (
-      <div className="text-center p-10">Carregando dados do imóvel...</div>
+      <div className="text-center p-10 text-black">
+        Carregando dados do imóvel...
+      </div>
     );
   }
 

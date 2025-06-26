@@ -219,7 +219,7 @@ export default function PropertyDetailsPage() {
 
   if (!imovel) {
     return (
-      <div className="flex items-center justify-center h-screen">
+      <div className="flex items-center justify-center h-screen text-black">
         Carregando dados do imóvel...
       </div>
     );
