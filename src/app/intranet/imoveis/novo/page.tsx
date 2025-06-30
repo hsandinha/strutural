@@ -8,8 +8,9 @@ import { ArrowLeftCircle } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { Timestamp } from "firebase/firestore";
 import { criarImovelComIdSequencial } from "@/lib/firestoreUtils";
+import { getStorage, ref, uploadBytes, getDownloadURL } from "firebase/storage";
 
-import ProtectedRoute from "@/components/ProtectedRoute"; // Import do componente de proteção
+import ProtectedRoute from "@/components/ProtectedRoute";
 
 export default function AdicionarImovelPage() {
   const [newProperty, setNewProperty] = useState<Partial<Imovel>>({
@@ -49,15 +50,37 @@ export default function AdicionarImovelPage() {
     dataCadastro: new Date().toISOString(),
   });
 
+  const [selectedFiles, setSelectedFiles] = useState<File[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const router = useRouter();
+  const storage = getStorage();
 
+  // Upload das fotos selecionadas e retorno das URLs
+  async function fazerUploadDasFotosSelecionadas(): Promise<string[]> {
+    const urls: string[] = [];
+    for (const arquivo of selectedFiles) {
+      const storageRef = ref(storage, `imoveis/${Date.now()}_${arquivo.name}`);
+      await uploadBytes(storageRef, arquivo);
+      const url = await getDownloadURL(storageRef);
+      urls.push(url);
+    }
+    return urls;
+  }
+
+  // Submit do formulário: upload fotos e salvar imóvel
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsLoading(true);
 
     try {
-      // Prepara os dados completos para salvar
+      let fotosAtualizadas = [...(newProperty.fotos || [])];
+
+      if (selectedFiles.length > 0) {
+        const urls = await fazerUploadDasFotosSelecionadas();
+        fotosAtualizadas = [...fotosAtualizadas, ...urls];
+        setSelectedFiles([]); // limpa arquivos locais após upload
+      }
+
       const dataToSave: Omit<Imovel, "id"> = {
         titulo: newProperty.titulo || "",
         descricao: newProperty.descricao || "",
@@ -91,7 +114,7 @@ export default function AdicionarImovelPage() {
           contato: "",
           horarioContato: "",
         },
-        fotos: newProperty.fotos || [],
+        fotos: fotosAtualizadas,
         videoUrl: newProperty.videoUrl || "",
       };
 
@@ -128,6 +151,8 @@ export default function AdicionarImovelPage() {
           setProperty={setNewProperty}
           onSubmit={handleSubmit}
           isLoading={isLoading}
+          selectedFiles={selectedFiles}
+          setSelectedFiles={setSelectedFiles}
         />
       </div>
     </ProtectedRoute>

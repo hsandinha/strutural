@@ -339,7 +339,7 @@ export default function PropertyDetailsPage() {
 
                 <div className="py-4 flex items-center gap-4">
                   <Image
-                    src="/Adhimar.png"
+                    src="/adhimar.png"
                     alt="Foto do Corretor"
                     width={56}
                     height={56}

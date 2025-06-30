@@ -8,8 +8,9 @@ import Link from "next/link";
 import { ArrowLeftCircle } from "lucide-react";
 import { db } from "@/lib/firebaseConfig";
 import { doc, getDoc, updateDoc } from "firebase/firestore";
+import { getStorage, ref, uploadBytes, getDownloadURL } from "firebase/storage";
 
-import ProtectedRoute from "@/components/ProtectedRoute"; // Import do componente de proteção
+import ProtectedRoute from "@/components/ProtectedRoute";
 
 export default function EditarImovelPage() {
   const router = useRouter();
@@ -19,6 +20,7 @@ export default function EditarImovelPage() {
   const [propertyData, setPropertyData] = useState<Partial<Imovel> | null>(
     null
   );
+  const [selectedFiles, setSelectedFiles] = useState<File[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [notFound, setNotFound] = useState(false);
 
@@ -49,6 +51,20 @@ export default function EditarImovelPage() {
     fetchImovel();
   }, [id]);
 
+  const storage = getStorage();
+
+  // Função para upload das fotos selecionadas
+  async function fazerUploadDasFotosSelecionadas(): Promise<string[]> {
+    const urls: string[] = [];
+    for (const arquivo of selectedFiles) {
+      const storageRef = ref(storage, `imoveis/${Date.now()}_${arquivo.name}`);
+      await uploadBytes(storageRef, arquivo);
+      const url = await getDownloadURL(storageRef);
+      urls.push(url);
+    }
+    return urls;
+  }
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!propertyData || !id) return;
@@ -58,11 +74,21 @@ export default function EditarImovelPage() {
     const idStr = Array.isArray(id) ? id[0] : id;
 
     try {
+      let fotosAtualizadas = [...(propertyData.fotos || [])];
+
+      if (selectedFiles.length > 0) {
+        const urls = await fazerUploadDasFotosSelecionadas();
+        fotosAtualizadas = [...fotosAtualizadas, ...urls];
+        setSelectedFiles([]); // limpa arquivos locais após upload
+      }
+
       const docRef = doc(db, "imoveis", idStr);
 
-      // Atualiza o documento com os dados do formulário
-      // Atenção: aqui você pode querer validar ou limpar os dados antes de salvar
-      await updateDoc(docRef, propertyData);
+      // Atualiza o documento com os dados do formulário, incluindo fotos atualizadas
+      await updateDoc(docRef, {
+        ...propertyData,
+        fotos: fotosAtualizadas,
+      });
 
       alert("Alterações salvas com sucesso!");
       router.push("/intranet/imoveis");
@@ -131,6 +157,8 @@ export default function EditarImovelPage() {
           }
           onSubmit={handleSubmit}
           isLoading={isLoading}
+          selectedFiles={selectedFiles}
+          setSelectedFiles={setSelectedFiles}
         />
       </div>
     </ProtectedRoute>
