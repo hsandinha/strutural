@@ -116,7 +116,6 @@ export function Footer() {
             &copy; {new Date().getFullYear()} Strutural Imóveis. Todos os
             direitos reservados.
           </p>
-          <p>Desenvolvido com por Hebert Sandinha</p>
         </div>
       </div>
     </footer>
