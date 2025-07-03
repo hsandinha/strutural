@@ -640,7 +640,7 @@ export function PropertyForm({
           </div>
         </div>
       </fieldset>
-      {/* Upload múltiplo de fotos */}
+      {/* Upload múltiplo de fotos e Videos */}
       <fieldset>
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-2">
@@ -711,8 +711,20 @@ export function PropertyForm({
           )}
         </div>
 
-        {/* Resto do formulário (vídeo, botões, etc) */}
-        {/* ... */}
+        {/* Video URL */}
+        <div>
+          <label className="block text-sm font-semibold text-gray-700 mb-2">
+            URL do Vídeo (opcional)
+          </label>
+          <input
+            type="url"
+            name="videoUrl"
+            value={property.videoUrl || ""}
+            onChange={handleChange}
+            className={inputClass}
+            placeholder="https://"
+          />
+        </div>
       </fieldset>
       {/* Botão salvar */}
       <div className="pt-6 border-t">
