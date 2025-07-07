@@ -159,7 +159,7 @@ export function SearchBar() {
             onClick={handleSearch}
             className="w-full md:w-1/3 bg-gray-900/80 text-white font-bold py-3 px-4 rounded-md hover:bg-gray-900 transition-colors border-2 border-blue-600 text-sm tracking-wider"
           >
-            BUSCAr IMÓVEIS
+            BUSCAR IMÓVEIS
           </button>
         </div>
       </form>
