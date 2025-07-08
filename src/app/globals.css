@@ -21,9 +21,80 @@
   }
 }
 
-body {
-  background: var(--background);
-  color: var(--foreground);
+/* Estilos específicos para impressão */
+@media print {
+  /* Oculta elementos comuns da interface do usuário que não devem ser impressos */
+  header,
+  footer,
+  nav,
+  aside,
+  form,
+  .no-print, /* Classe customizada para ocultar coisas específicas */
+  .sticky,
+  /* Oculta as imagens dos corretores se elas forem parte do layout base */
+  .rounded-full.object-cover,
+  /* Oculta modais e seus backgrounds */
+  .fixed.inset-0.bg-black\/60,
+  .fixed.inset-0.bg-black.bg-opacity-50 {
+    display: none !important;
+  }
+
+  /* Ajusta o corpo da página para impressão */
+  body {
+    margin: 0;
+    padding: 0;
+    background-color: #fff !important; /* Garante fundo branco na impressão */
+    color: #000 !important; /* Garante texto preto na impressão */
+    -webkit-print-color-adjust: exact; /* Força a impressão de cores de fundo/texto (para WebKit) */
+    print-color-adjust: exact; /* Força a impressão de cores de fundo/texto (Padrão W3C) */
+  }
+
+  /* Ajusta o layout principal para ocupar a largura total da página */
+  main,
+  .container {
+    max-width: none !important;
+    width: 100% !important;
+    padding: 0 !important;
+    margin: 0 !important;
+  }
+
+  /* Reduz o tamanho da fonte para melhor aproveitamento do papel */
+  h1 {
+    font-size: 20pt !important;
+  }
+  h2 {
+    font-size: 16pt !important;
+  }
+  h3 {
+    font-size: 14pt !important;
+  }
+  p,
+  ul,
+  ol,
+  li,
+  span,
+  div {
+    font-size: 10pt !important;
+    line-height: 1.4 !important;
+    color: #000 !important; /* Garante texto preto */
+  }
+
+  /* Remove bordas e sombras que podem não ficar bem na impressão */
+  .border,
+  .shadow-md,
+  .shadow-lg,
+  .shadow-2xl {
+    border: none !important;
+    box-shadow: none !important;
+  }
+
+  /* Garante quebra de página se o conteúdo for muito longo */
+  .page-break-after {
+    page-break-after: always;
+  }
+  .page-break-before {
+    page-break-before: always;
+  }
 }
 
 @layer components {

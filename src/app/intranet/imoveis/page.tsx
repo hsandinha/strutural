@@ -1,8 +1,11 @@
+// src/app/intranet/imoveis/page.tsx (ou o caminho onde está GerenciarImoveisPage)
+
 "use client";
 
 import { useState, useMemo, useEffect } from "react";
 import Link from "next/link";
 import Image from "next/image";
+import { WhatsappLogo } from "@phosphor-icons/react";
 import {
   PlusCircle,
   FilePenLine,
@@ -11,14 +14,14 @@ import {
   AlertTriangle,
   Search,
   DollarSign,
-  Send,
   ArrowLeftCircle,
+  Printer, // <-- Importe o ícone Printer aqui
 } from "lucide-react";
 import { db } from "@/lib/firebaseConfig";
 import { collection, getDocs, doc, updateDoc } from "firebase/firestore";
 import { Imovel } from "@/types";
 
-import ProtectedRoute from "@/components/ProtectedRoute"; // Import do componente de proteção
+import ProtectedRoute from "@/components/ProtectedRoute";
 
 type StatusFiltro = "Ativo" | "Inativo" | "Vendido";
 
@@ -47,7 +50,6 @@ export default function GerenciarImoveisPage() {
   } | null>(null);
   const [loading, setLoading] = useState(false);
 
-  // Busca imóveis do Firestore ao montar o componente
   useEffect(() => {
     async function fetchImoveis() {
       setLoading(true);
@@ -103,7 +105,7 @@ export default function GerenciarImoveisPage() {
     return porStatus.filter(
       (imovel) =>
         imovel.titulo.toLowerCase().includes(lowercasedQuery) ||
-        imovel.id.toString().toLowerCase().includes(lowercasedQuery)
+        imovel.id.toLowerCase().includes(lowercasedQuery)
     );
   }, [imoveis, searchQuery, statusFiltro]);
 
@@ -126,13 +128,29 @@ export default function GerenciarImoveisPage() {
               {imoveisFiltrados.length} imóveis encontrados
             </p>
           </div>
-          <Link
-            href="/intranet/imoveis/novo"
-            className="inline-flex items-center gap-2 bg-blue-600 text-white font-semibold py-2 px-4 rounded-lg hover:bg-blue-700 transition-colors"
-          >
-            <PlusCircle size={20} />
-            Adicionar Novo Imóvel
-          </Link>
+          <div className="flex gap-4">
+            <Link
+              href="/intranet/imoveis/novo"
+              className="inline-flex items-center gap-2 bg-blue-600 text-white font-semibold py-2 px-4 rounded-lg hover:bg-blue-700 transition-colors"
+            >
+              <PlusCircle size={20} />
+              Adicionar Novo Imóvel
+            </Link>
+          </div>
+        </div>
+
+        <div className="mb-6 relative">
+          <input
+            type="text"
+            placeholder="Pesquisar por título ou código do imóvel..."
+            className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500"
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+          />
+          <Search
+            size={20}
+            className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"
+          />
         </div>
 
         <div className="flex border-b border-gray-200 mb-6">
@@ -238,6 +256,15 @@ export default function GerenciarImoveisPage() {
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                       <div className="flex items-center justify-end gap-4">
+                        {/* NOVO BOTÃO DE IMPRIMIR AQUI */}
+                        <Link
+                          href={`/imprimir-imovel/${imovel.id}`}
+                          target="_blank" // Abre em uma nova aba
+                          className="text-gray-500 hover:text-purple-600"
+                          title="Imprimir Detalhes do Imóvel"
+                        >
+                          <Printer size={20} />
+                        </Link>
                         {imovel.proprietario?.contato ? (
                           <a
                             href={`https://wa.me/${imovel.proprietario.contato}`}
@@ -246,14 +273,14 @@ export default function GerenciarImoveisPage() {
                             className="text-green-600 hover:text-green-800"
                             title={`Conversar com ${imovel.proprietario.nome}`}
                           >
-                            <Send size={20} />
+                            <WhatsappLogo size={20} />
                           </a>
                         ) : (
                           <span
                             className="text-gray-400"
                             title="Contato não informado"
                           >
-                            <Send size={20} />
+                            <WhatsappLogo size={20} />
                           </span>
                         )}
                         <Link
