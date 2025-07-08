@@ -4,6 +4,7 @@ import { useState, useEffect } from "react";
 import { useParams } from "next/navigation";
 import { Imovel } from "@/types";
 import Image from "next/image";
+import { WhatsappLogo } from "@phosphor-icons/react";
 import Link from "next/link";
 import { ScheduleVisitModal } from "@/components/ScheduleVisitModal";
 import {
@@ -350,6 +351,19 @@ export default function PropertyDetailsPage() {
                     <p className="text-sm text-gray-600">(31) 99417-8066</p>
                   </div>
                 </div>
+                <div className="py-4 flex items-center gap-4">
+                  <Image
+                    src="/simone.png"
+                    alt="Foto do Corretor"
+                    width={56}
+                    height={56}
+                    className="rounded-full object-cover"
+                  />
+                  <div>
+                    <p className="font-bold text-gray-800">Simone Campos</p>
+                    <p className="text-sm text-gray-600">(31) 99572-1272</p>
+                  </div>
+                </div>
 
                 <div className="pt-4 space-y-3">
                   <button
@@ -364,6 +378,20 @@ export default function PropertyDetailsPage() {
                   >
                     <CalendarPlus size={20} />
                     AGENDAR UMA VISITA
+                  </button>
+                  <button
+                    onClick={() => {
+                      const pageLink = window.location.href; // Obtém a URL da página atual
+                      const whatsappUrl = `https://wa.me/?text=${encodeURIComponent(
+                        "Confira este link: " + pageLink
+                      )}`;
+                      window.open(whatsappUrl, "_blank"); // Abre o WhatsApp em uma nova aba
+                    }}
+                    className="w-full flex items-center justify-center gap-2 bg-white text-gray-800 font-bold py-3 rounded-lg border-2 border-gray-800 hover:bg-gray-100 transition-colors"
+                  >
+                    {/* Troque CalendarPlus por WhatsappLogo ou o nome do seu ícone do WhatsApp */}
+                    <WhatsappLogo size={20} />
+                    COMPARTILHAR
                   </button>
                 </div>
               </div>
