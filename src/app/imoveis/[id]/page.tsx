@@ -383,7 +383,7 @@ export default function PropertyDetailsPage() {
                     onClick={() => {
                       const pageLink = window.location.href; // Obtém a URL da página atual
                       const whatsappUrl = `https://wa.me/?text=${encodeURIComponent(
-                        "Confira este Imovel da Strutural Imoveis: " + pageLink
+                        "Confira este Imóvel da Strutural Imóveis: " + pageLink
                       )}`;
                       window.open(whatsappUrl, "_blank"); // Abre o WhatsApp em uma nova aba
                     }}
